@@ -1,0 +1,152 @@
+﻿@model ForumProject.Models.UsersModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<style>
+    .loginPage {
+        box-sizing: border-box;
+        position: relative;
+        background: #D3C2E9;
+        margin: auto;
+    }
+    .logo {
+        position: absolute;
+        width: 74px;
+        height: 69px;
+        left: 0;
+        top: 0;
+    }
+
+    .conneKtForum {
+        position: absolute;
+        width: 180px;
+        height: 29px;
+        top: 24px;
+        left: 74px;
+        font-family: 'Garamond';
+        font-weight: 700;
+        font-size: 25px;
+        line-height: 29px;
+        text-align: center;
+        color: #000000;
+    }
+
+    .loginImg {
+        position: absolute;
+        width: 605px;
+        height: 455px;
+        top: 75px;
+        right: 5%; /* Position the image to the right of the screen */
+        mix-blend-mode: darken;
+        background: url('~/css/img.png');
+        transform: none; /* Reset the previous transform */
+    }
+
+
+    .logBox {
+        position: absolute;
+        width: 442.76px;
+        height: 500px;
+        top: 69px;
+        left: 8%;
+        background: #D9D9D9;
+        border-radius: 27px;
+        transform: rotate(-0.05deg);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 30px;
+        display: flex;
+
+    }
+
+    .logintoyourAccount {
+        text-align: center;
+        font-family: 'Garamond';
+        font-weight: 800;
+        font-size: 24px;
+        line-height: 26px;
+        color: #2D0F6A;
+        margin-left: 28px;
+    }
+
+    .control-label {
+        font-family: 'Garamond';
+        font-weight: 500;
+        font-size: 22px;
+        line-height: 26px;
+        color: #2D0F6A;
+    }
+
+    .form-control {
+        width: 100%;
+        height: 43px;
+        background: #EFEDED;
+        border-radius: 13px;
+        margin-bottom: 20px;
+    }
+
+    .loginButton {
+        width: 112px;
+        height: 35px;
+        background: #531D97;
+        border-radius: 25px;
+        color:aliceblue;
+        font-family:'Times New Roman', Times, serif;
+        font-size:18px;
+        margin-top:20px;
+        margin-left:35%;
+        align-self:center;
+    }
+
+    .register {
+        font-family: 'Garamond';
+        font-style: italic;
+        font-weight: 600;
+        font-size: 22px;
+        line-height: 29px;
+        color: #3E1261;
+        align-self: center;
+    }
+
+</style>
+<body class="loginPage">
+    <img src="~/css/logo.png" class="logo" />
+    <p class="conneKtForum">ConneKt Forum</p>
+
+    <br/>
+    <br/>
+    <br/>
+    <div class="">
+        <form asp-action="Login" class="logBox">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <p class="logintoyourAccount">Login to your Account</p>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" type="password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Login" class="loginButton" />
+            </div>
+            <a asp-action="SignUp" asp-controller="Login" class="register">Register an Account</a>
+            <a asp-action="ChangePassword" asp-controller="Login" class="register" >Forgot Password</a>
+        </form>
+    </div>
+    <div class="image">
+        <img class="loginImg" src="~/css/img.png"/>
+    </div>
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+
+</body>
