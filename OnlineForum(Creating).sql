@@ -5,10 +5,9 @@ CREATE TABLE Users(
 Id int identity(1,1) PRIMARY KEY,
 Name VARCHAR(30),
 Email VARCHAR(90) UNIQUE,
-Password VARCHAR(15) UNIQUE,
+Password VARCHAR(50) NOT NULL,
 SecurityQn VARCHAR(MAX),
 SecurityAns VARCHAR(225));
-
 
 --Creating a table with Discussion Forum
 CREATE TABLE Forum(
@@ -31,8 +30,6 @@ RelpyCreated DATETIME DEFAULT SYSDATETIME() NOT NULL,
 CONSTRAINT fk_UserID FOREIGN KEY (Id) REFERENCES Users(Id),
 CONSTRAINT fk_ForumId FOREIGN KEY (ForumId) REFERENCES Forum(ForumId));
 
-DROP TABLE PollResult;
-
 --Creating a table for Polls
 CREATE TABLE Polls(
 PollId INT IDENTITY(1,1) PRIMARY KEY,
@@ -54,7 +51,6 @@ CONSTRAINT fk_pollRes_id FOREIGN KEY (UserId) REFERENCES Users(Id),
 CONSTRAINT fk_PollId FOREIGN KEY (PollId) REFERENCES Polls(PollId)
 );
 
-
  CREATE TABLE Memory(
  Memory_Id INT IDENTITY(1,1) PRIMARY KEY,
  UserId INT NOT NULL,
@@ -70,3 +66,17 @@ CONSTRAINT fk_PollId FOREIGN KEY (PollId) REFERENCES Polls(PollId)
  SELECT * FROM PollResult;
  SELECT * FROM Polls;
  SELECT * FROM Memory;
+
+ --Stored procedure for inserting the user
+ CREATE OR ALTER PROCEDURE InsertUser 
+ @Name VarcHar(30),
+ @Email VARCHAR(90),
+ @Password VARCHAR(50),
+ @SecurityQn VARCHAR(MAX),
+ @SecurityAns VARCHAR(225)
+ AS
+ BEGIN
+ INSERT INTO Users
+ VALUES (@Name,@Email,@Password,@SecurityQn,@SecurityAns)
+ END
+

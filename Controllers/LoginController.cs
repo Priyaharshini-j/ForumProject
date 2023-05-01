@@ -1,11 +1,22 @@
 ﻿using ForumProject.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using System.ComponentModel.DataAnnotations;
+using System.Data.SqlClient;
+using System.Security.Cryptography;
 
 namespace ForumProject.Controllers
 {
     public class LoginController : Controller
     {
+        IConfiguration configuration;
+        SqlConnection connection;
+        public LoginController(IConfiguration _configuration)
+        {
+            configuration = _configuration;
+            connection = new SqlConnection(configuration.GetConnectionString("OnlineForum"));
+        }
 
         // GET: LoginController1/Create
         public ActionResult Login()
@@ -20,10 +31,41 @@ namespace ForumProject.Controllers
         {
             try
             {
-                return RedirectToAction("Index","Home");
+                connection.Open();
+                string query = $"SELECT * FROM Users WHERE Email=@Email AND Password=@Password";
+                SqlCommand cmd = new SqlCommand(query,connection);
+                cmd.Parameters.AddWithValue("@Email", user.Email);
+                cmd.Parameters.AddWithValue("@Password",user.Password);
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    
+                    string email = (string)reader["Email"];
+                    string psw = (string)reader["Password"];
+                    if(user.Email==email && user.Password == psw)
+                    {
+                        return RedirectToAction("DiscussionList", "Login");
+                        int userId = reader.GetInt32(reader.GetOrdinal("Id"));
+                        string userName = reader.GetString(reader.GetOrdinal("Name"));
+                        HttpContext.Session.SetString("Id", userId.ToString());
+                        HttpContext.Session.SetString("Name", userName);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Wrong Password/Email");
+                        return View();
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid Email or Password");
+                    return View();
+                }
             }
-            catch
+            catch (Exception exception)
             {
+                ModelState.AddModelError (string.Empty, exception.Message);
                 return View();
             }
         }
@@ -40,10 +82,38 @@ namespace ForumProject.Controllers
         {
             try
             {
-                return RedirectToAction("Index", "Home");
+                connection.Open();
+                Console.WriteLine(user.Name);
+                Console.WriteLine(user.Email);
+                Console.WriteLine(user.Password);
+                Console.WriteLine(user.securityQn);
+                Console.WriteLine(user.securityQn);
+                Console.WriteLine(user.securityAns);
+                
+                if(connection.State == System.Data.ConnectionState.Open)
+                {
+                    SqlCommand command = new SqlCommand("InsertUser", connection);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@Name", user.Name);
+                    command.Parameters.AddWithValue("@Email", user.Email);
+                    command.Parameters.AddWithValue("@Password", user.Password);
+                    command.Parameters.AddWithValue("@SecurityQn", user.securityQn);
+                    command.Parameters.AddWithValue("@SecurityAns", user.securityAns);
+
+                    command.ExecuteNonQuery();
+
+                    return RedirectToAction("Login", "Login");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Connection state is not open");
+                }
+                connection.Close();
+                return View();
             }
-            catch
+            catch(Exception exception)
             {
+                ModelState.AddModelError(string.Empty, exception.Message);
                 return View();
             }
         }
@@ -61,17 +131,46 @@ namespace ForumProject.Controllers
         {
             try
             {
-                return RedirectToAction("Index", "Home");
+                connection.Open();
+                string query = $"SELECT * FROM Users WHERE Email=@Email AND SecurityQn=@securityQn AND SecurityAns=@securityAns";
+                SqlCommand cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@Email", user.Email);
+                cmd.Parameters.AddWithValue("@SecurityQn", user.securityQn);
+                cmd.Parameters.AddWithValue("@securityAns", user.securityAns);
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+
+                    string qn = (string)reader["SecurityQn"];
+                    string ans = (string)reader["SecurityAns"];
+                    if (user.securityQn == qn && user.securityAns == ans)
+                    {
+                        int userId = reader.GetInt32(reader.GetOrdinal("Id"));
+                        return RedirectToAction("DiscussionList", "Login");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Wrong Password/Email");
+                        return View();
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid Email or Password");
+                    return View();
+                }
             }
-            catch
+            catch(Exception ex)
             {
+                ModelState.AddModelError(string.Empty,ex.Message);
                 return View();
             }
         }
 
 
         // GET: LoginController1/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult EditProfile(int id)
         {
             return View();
         }
@@ -79,11 +178,12 @@ namespace ForumProject.Controllers
         // POST: LoginController1/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult EditProfile(int id, UsersModel user)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+
+                return RedirectToAction("DiscussionList","Login");
             }
             catch
             {
