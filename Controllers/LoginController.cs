@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
+using System.Web;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
+using System.Drawing;
 
 namespace ForumProject.Controllers
 {
@@ -12,10 +15,14 @@ namespace ForumProject.Controllers
     {
         IConfiguration configuration;
         SqlConnection connection;
-        public LoginController(IConfiguration _configuration)
+        IHttpContextAccessor Context;
+
+        int userId;
+        public LoginController(IConfiguration _configuration, IHttpContextAccessor context)
         {
             configuration = _configuration;
             connection = new SqlConnection(configuration.GetConnectionString("OnlineForum"));
+            Context = context;
         }
 
         // GET: LoginController1/Create
@@ -31,6 +38,7 @@ namespace ForumProject.Controllers
         {
             try
             {
+                
                 connection.Open();
                 string query = $"SELECT * FROM Users WHERE Email=@Email AND Password=@Password";
                 SqlCommand cmd = new SqlCommand(query,connection);
@@ -40,16 +48,13 @@ namespace ForumProject.Controllers
                 if (reader.HasRows)
                 {
                     reader.Read();
-                    
+                    string name = (string)reader["Name"];
                     string email = (string)reader["Email"];
                     string psw = (string)reader["Password"];
                     if(user.Email==email && user.Password == psw)
                     {
-                        return RedirectToAction("DiscussionList", "Login");
-                        int userId = reader.GetInt32(reader.GetOrdinal("Id"));
-                        string userName = reader.GetString(reader.GetOrdinal("Name"));
-                        HttpContext.Session.SetString("Id", userId.ToString());
-                        HttpContext.Session.SetString("Name", userName);
+                        Context.HttpContext.Session.SetString("UserName", name);
+                        return RedirectToAction("DiscussionList", "User", new {Id = user.Id});
                     }
                     else
                     {
@@ -147,7 +152,7 @@ namespace ForumProject.Controllers
                     if (user.securityQn == qn && user.securityAns == ans)
                     {
                         int userId = reader.GetInt32(reader.GetOrdinal("Id"));
-                        return RedirectToAction("DiscussionList", "Login");
+                        return RedirectToAction("DiscussionList", "User", new {Id=user.Id});
                     }
                     else
                     {
@@ -182,7 +187,6 @@ namespace ForumProject.Controllers
         {
             try
             {
-
                 return RedirectToAction("DiscussionList","Login");
             }
             catch
@@ -190,6 +194,7 @@ namespace ForumProject.Controllers
                 return View();
             }
         }
+        
 
         // GET: LoginController1/Delete/5
         public ActionResult Delete(int id)

@@ -68,7 +68,7 @@ CONSTRAINT fk_PollId FOREIGN KEY (PollId) REFERENCES Polls(PollId)
  SELECT * FROM Memory;
 
  --Stored procedure for inserting the user
- CREATE OR ALTER PROCEDURE InsertUser 
+ CREATE OR ALTER PROCEDURE InsertUser
  @Name VarcHar(30),
  @Email VARCHAR(90),
  @Password VARCHAR(50),
@@ -80,3 +80,22 @@ CONSTRAINT fk_PollId FOREIGN KEY (PollId) REFERENCES Polls(PollId)
  VALUES (@Name,@Email,@Password,@SecurityQn,@SecurityAns)
  END
 
+ CREATE OR ALTER PROCEDURE FetchAllForum
+ AS
+ BEGIN
+ SELECT * FROM Forum
+ END
+
+CREATE OR ALTER PROCEDURE InsertForum
+    @Email INT,
+    @Category VARCHAR(70),
+    @Title VARCHAR(125),
+    @Content VARCHAR(MAX),
+    @CreatedDate DATETIME
+AS
+BEGIN
+    DECLARE @Id INT
+    SET @Id = (SELECT ID FROM Users WHERE Email = @Email)
+    INSERT INTO Forum 
+    VALUES (@Id, @Category, @Title, @Content, @CreatedDate)
+END

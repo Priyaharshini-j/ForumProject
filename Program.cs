@@ -9,6 +9,16 @@ namespace ForumProject
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            //Session
+            builder.Services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
+
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(360);
+            });
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -21,6 +31,7 @@ namespace ForumProject
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseSession();
 
             app.MapControllerRoute(
                 name: "default",
