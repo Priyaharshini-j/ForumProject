@@ -18,7 +18,7 @@ namespace ForumProject.Controllers
         SqlConnection connection;
         IHttpContextAccessor Context;
 
-        int userId;
+        //This part is user  to set the Session
         public LoginController(IConfiguration _configuration, IHttpContextAccessor context)
         {
             configuration = _configuration;
@@ -28,15 +28,15 @@ namespace ForumProject.Controllers
 
 
 
-
-        // GET: LoginController1/Create
+        //This is get function of Login Page
+        // GET: LoginController/Login
         public ActionResult Login()
         {
             return View();
         }
 
 
-
+        //This is the POST Function of Login
         // POST: LoginController1/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -44,8 +44,8 @@ namespace ForumProject.Controllers
         {
             try
             {
-                
                 connection.Open();
+                //In here we are selecting the record with the the entered email and password
                 string query = $"SELECT * FROM Users WHERE Email=@Email AND Password=@Password";
                 SqlCommand cmd = new SqlCommand(query,connection);
                 cmd.Parameters.AddWithValue("@Email", user.Email);
@@ -60,6 +60,7 @@ namespace ForumProject.Controllers
                     string psw = (string)reader["Password"];
                     if(user.Email==email && user.Password == psw)
                     {
+                        //Setting the session with username and Id
                         Context.HttpContext.Session.SetString("UserName", name);
                         Context.HttpContext.Session.SetInt32("UserId", userId);
                         return RedirectToAction("DiscussionList", "User", new { Id = userId});
@@ -85,16 +86,16 @@ namespace ForumProject.Controllers
 
 
 
+
+        //Get Method of SignUp Page
         //GET: LoginController/SignUp
         public ActionResult SignUp()
         {
             return View();
         }
 
-
-
-
-        // POST: LoginController1/Create
+        //POST Method of SignUp Page
+        // POST: LoginController1/SignUp
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult SignUp(UsersModel user)
@@ -140,16 +141,13 @@ namespace ForumProject.Controllers
 
 
 
-        //GET: LoginController/SignUp
+        //GET: LoginController/ForgotPassword
         public ActionResult ChangePassword()
         {
             return View();
         }
 
-
-
-
-        // POST: LoginController1/Create
+        // POST: LoginController/ForgotPassword
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ChangePassword(UsersModel user)
@@ -197,13 +195,13 @@ namespace ForumProject.Controllers
         }
 
 
-        // GET: LoginController1/Edit/5
+        // GET: LoginController/EditProfile
         public ActionResult EditProfile(int id)
         {
             return View();
         }
 
-        // POST: LoginController1/Edit/5
+        // POST: LoginController/EditProfile
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditProfile(int id, UsersModel user)
@@ -231,15 +229,16 @@ namespace ForumProject.Controllers
                 return View();
             }
         }
-        
 
+
+        // GET: LoginController/DeleteProfile
         // GET: LoginController1/Delete/5
         public ActionResult DeleteProfile(int id)
         {
             return View(GetUserById(id));
         }
 
-        public UsersModel GetUserById (int id)
+        public UsersModel GetUserById(int id)
         {
             connection.Open();
             try
@@ -263,9 +262,9 @@ namespace ForumProject.Controllers
                 }
                 return userDetails;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty,ex.Message);
+                ModelState.AddModelError(string.Empty, ex.Message);
                 return null;
             }
         }

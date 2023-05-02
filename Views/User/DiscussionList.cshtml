@@ -23,7 +23,7 @@
         height: 69px;
         top:0px;
         margin: 0 auto; /* Center the navbar horizontally */
-        background-color: #FFF0F0;
+        background-color: #E9b5e7;
         position: absolute;
         left: 216px;
         float:right;
@@ -79,7 +79,7 @@
     .rectangle3 {
         width: 216px;
         height: 100%;
-        background-color: #FFF0F0;
+        background-color: #E9b5e7;
         position: absolute;
         top: 0px;
         left: 0px;
@@ -120,13 +120,17 @@
             width: calc(100% - 216px);
             left:216px;
             justify-content: center;
+            font-family: Garamond;
+            
         }
 
         .table th {
-            background-color: #EACDD0;
+            background-color: #E7D1E6;
             color: #000000;
             justify-content: center;
             text-align:center;
+            font-weight:800;
+            font-size: 20px;
         }
         .table td{
             justify-content: center;
@@ -258,7 +262,7 @@
                 <a class="myPolls">My Polls</a>
                 <a class="myMemory">My Memories</a>
                 <a href="@Url.Action("EditProfile","Login", new {Id = userId} )" class="editProfile">Edit Profile</a>
-                <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="editProfile">Delete Profile</a>
+                <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="deleteProfile">Delete Profile</a>
                 <a class="newAccount" asp-action="SignUp" asp-controller="Login"> New Account</a>
             </div>
         @using (Html.BeginForm())

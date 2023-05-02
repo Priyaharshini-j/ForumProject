@@ -5,6 +5,7 @@ using NuGet.Protocol.Plugins;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Security.Policy;
 
 namespace ForumProject.Controllers
 {
@@ -163,7 +164,7 @@ namespace ForumProject.Controllers
         {
             return View();
         }
-        // POST: DiscussionController/Create
+        // POST: UserController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(ForumCreationModel discuss)
@@ -189,11 +190,123 @@ namespace ForumProject.Controllers
             }
         }
 
+        //GET:UserController/ForumAndReplies
+        public ActionResult ForumAndReplies(int id)
+        {
+            var discussion = GetDiscussionById(id);
+            var replies = GetRepliesByDiscussionId(id);
+
+            if (discussion == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Discussion = discussion;
+            ViewBag.Replies = replies;
+
+            var model = new DiscussionViewModel
+            {
+                forum = discussion,
+                repliesList = replies,
+                replies = new RepliesModel { forumId = id }
+            };
+
+            return View(model);
+        }
+
+        //POST: UserCOntroller/ForumAndRelies
+        public ActionResult ForumAndRelies(RepliesModel newReply)
+        {
+            if (ModelState.IsValid)
+            {
+                var connection = new SqlConnection(_configuration.GetConnectionString("Users"));
+                connection.Open();
+                //  Have to change
+                /*
+                string query = "INSERT INTO dbo.Replies (ForumId, Id, Content, ReplyCreated) VALUES (@DiscussionId, @Email, @Content, @ReplyCreated)";
+
+                SqlCommand cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@ForumId", newReply.forumId);
+                cmd.Parameters.AddWithValue("@Email", newReply.Id);
+                cmd.Parameters.AddWithValue("@Content", newReply.replyContent);
+                cmd.Parameters.AddWithValue("@ReplyCreated", DateTime.Now);
+                */
+                cmd.ExecuteNonQuery();
+                connection.Close();
+
+                return RedirectToAction("Details", new { id = newReply.forumId });
+            }
 
 
 
+            // If model state is invalid, return to the same page with the model to show validation errors
+            var discussion = GetDiscussionById(newReply.forumId);
+            var replies = GetRepliesByDiscussionId(newReply.forumId);
 
+            var model = new DiscussionViewModel
+            {
+                forum = discussion,
+                repliesList = replies,
+                replies = newReply
+            };
 
+            return View("ForumList");
+        }
+
+        private ForumModel GetDiscussionById(int id)
+        {
+            ForumModel discussion =new();
+
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("OnlineForum")))
+            {
+                connection.Open();
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Forum WHERE ForumId=@Id", connection);
+                cmd.Parameters.AddWithValue("@Id", id);
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.Read())
+                {
+                    discussion = new ForumModel
+                    {
+                        Id = (int)dr["Id"],
+                        Email = (string)dr["Email"],
+                        topic = (string)dr["Title"],
+                        description = (string)dr["Description"],
+                        forumCreated = (DateTime)dr["DateCreated"]
+                    };
+                }
+                dr.Close();
+            }
+
+            return discussion;
+        }
+
+        private List<RepliesModel> GetRepliesByDiscussionId(int id)
+        {
+            List<RepliesModel> replies = new List<RepliesModel>();
+
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("Users")))
+            {
+                connection.Open();
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Reply WHERE DiscussionId=@DiscussionId ORDER BY ReplyCreated ASC", connection);
+                cmd.Parameters.AddWithValue("@DiscussionId", id);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    RepliesModel reply = new RepliesModel
+                    {
+                        Id = (int)dr["Id"],
+                        DiscussionId = (int)dr["DiscussionId"],
+                        Email = (string)dr["Email"],
+                        Content = (string)dr["Content"],
+                        ReplyCreated = (DateTime)dr["ReplyCreated"]
+                    };
+                    replies.Add(reply);
+                }
+                dr.Close();
+            }
+
+            return replies;
+        }
 
 
 
