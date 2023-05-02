@@ -144,11 +144,16 @@
                 <input type="password" asp-for="ConfirmPassword" class="form-control" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="securityQn" class="control-label"></label>
-                <input asp-for="securityQn" class="form-control" />
-                <span asp-validation-for="securityQn" class="text-danger"></span>
-            </div>
+            @Html.LabelFor(m => m.securityQn, new { @class = "control-label" })
+            <div class="col-md-20">
+                @Html.DropDownListFor(m => m.securityQn, new SelectList(
+                new List<SelectListItem>
+                {
+                new SelectListItem { Text = "What is your nickname?", Value = "motherMaidenName" },
+                new SelectListItem { Text = "What is your favorite color?", Value = "favoriteColor" },
+                new SelectListItem { Text = "What is the name of your first pet?", Value = "firstPetName" }
+                }, "Value", "Text"), "Select a security question", new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.securityQn, "", new { @class = "text-danger" })
             <div class="form-group">
                 <label asp-for="securityAns" class="control-label"></label>
                 <input asp-for="securityAns" class="form-control" />

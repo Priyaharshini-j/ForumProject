@@ -246,12 +246,13 @@
                 <a class="myPolls">My Polls</a>
                 <a class="myMemory">My Memories</a>
             <a href="@Url.Action("EditProfile","Login", new {Id = userId} )" class="editProfile">Edit Profile</a>
+            <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="editProfile">Delete Profile</a>
                 <a class="newAccount" asp-action="SignUp" asp-controller="Login"> New Account</a>
             </div>
             @using (Html.BeginForm())
             {
                 <p class="searchBox">
-                    Search by keyword : @Html.TextBox("searchString")<br />
+                    @Html.TextBox("searchString")<br />
                     <br>
                     <input type="submit" class="btn btn-outline-success"  value="Search" />
                 </p>

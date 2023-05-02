@@ -107,3 +107,33 @@ BEGIN
 SELECT * from Forum
 WHERE Id= @Id
 END
+
+CREATE OR ALTER PROCEDURE EditUser
+@Id int,
+@Name VarcHar(30),
+@Email VARCHAR(90),
+@Password VARCHAR(50),
+@SecurityQn VARCHAR(MAX),
+@SecurityAns VARCHAR(225)
+AS
+BEGIN
+UPDATE Users SET Name= '@Name', Email='@Email', Password= '@Password' , SecurityQn ='@SecurityQn', SecurityAns='@SecurityAns' WHERE Id=@Id;
+END
+
+CREATE OR ALTER PROCEDURE DeleteUser
+@Id int
+AS
+BEGIN
+DELETE FROM Users WHERE Id=@Id;
+Delete FROM Forum WHERE Id= @Id;
+DELETE FROM Replies WHERE Id=@Id;
+DELETE FROM PollResult WHERE UserId=@Id;
+DELETE FROM Polls WHERE Id=@Id;
+DELETE FROM Memory WHERE UserId = @Id;
+END
+
+
+CREATE OR ALTER PROCEDURE GetUserById 
+@Id INT
+AS
+SELECT * FROM Users WHERE Id=@Id;

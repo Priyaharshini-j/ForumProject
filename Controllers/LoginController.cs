@@ -210,10 +210,22 @@ namespace ForumProject.Controllers
         {
             try
             {
-
-                return RedirectToAction("DiscussionList","Login",new { Id = id });
+                connection.Open();
+                using (SqlCommand cmd = new SqlCommand("EditUser", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("Id", id);
+                    cmd.Parameters.AddWithValue("@Name", user.Name);
+                    cmd.Parameters.AddWithValue("@Email", user.Email);
+                    cmd.Parameters.AddWithValue("@Password", user.Password);
+                    cmd.Parameters.AddWithValue("@SecurityQn", user.securityQn);
+                    cmd.Parameters.AddWithValue("@SecurityAns", user.securityAns);
+                    cmd.ExecuteNonQuery();
+                    connection.Close();
+                }
+                return RedirectToAction("DiscussionList", "User", new { Id = id });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View();
@@ -222,19 +234,59 @@ namespace ForumProject.Controllers
         
 
         // GET: LoginController1/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult DeleteProfile(int id)
         {
-            return View();
+            return View(GetUserById(id));
+        }
+
+        public UsersModel GetUserById (int id)
+        {
+            connection.Open();
+            try
+            {
+                SqlCommand cmd = new SqlCommand("GetUserById", connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Id", id);
+                UsersModel userDetails = new UsersModel();
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+
+                    userDetails.Id = (int)reader["Id"];
+                    userDetails.Name = (string)reader["Name"];
+                    userDetails.Email = (string)reader["Email"];
+                    userDetails.Password = (string)reader["Password"];
+                    userDetails.securityQn = (string)reader["SecurityQn"];
+                    userDetails.securityAns = (string)reader["SecurityAns"];
+
+                }
+                return userDetails;
+            }
+            catch(Exception ex)
+            {
+                ModelState.AddModelError(string.Empty,ex.Message);
+                return null;
+            }
         }
 
         // POST: LoginController1/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult DeleteProfile(int id, IFormCollection collection)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                connection.Open();
+                using (SqlCommand cmd = new SqlCommand("DeleteUser", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", id);
+                    cmd.ExecuteNonQuery();
+                    connection.Close();
+
+                }
+                return RedirectToAction(nameof(Login));
             }
             catch
             {
