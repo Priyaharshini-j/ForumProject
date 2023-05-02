@@ -87,7 +87,7 @@ CONSTRAINT fk_PollId FOREIGN KEY (PollId) REFERENCES Polls(PollId)
  END
 
 CREATE OR ALTER PROCEDURE InsertForum
-    @Email INT,
+    @Email VARCHAR(70),
     @Category VARCHAR(70),
     @Title VARCHAR(125),
     @Content VARCHAR(MAX),
@@ -98,4 +98,12 @@ BEGIN
     SET @Id = (SELECT ID FROM Users WHERE Email = @Email)
     INSERT INTO Forum 
     VALUES (@Id, @Category, @Title, @Content, @CreatedDate)
+END
+
+CREATE OR ALTER PROCEDURE ForumById
+@Id int
+AS
+BEGIN 
+SELECT * from Forum
+WHERE Id= @Id
 END

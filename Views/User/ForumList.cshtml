@@ -33,10 +33,17 @@
         .navbar a {
             float: right;
             margin-right: 10px;
+            margin-left: -130px;
             padding: 12px;
             font-size: 18px;
             color: #FFFFFF;
             text-decoration: none;
+            border-radius:5px;
+        }
+
+        .navbar a:Hover{
+                background-color: aliceblue;
+                color: black;
         }
 
         .navbar span {
@@ -58,19 +65,20 @@
 
     /* Style the ConneKt heading */
     .ConneKt {
-        font-size: 24px;
+        font-size: 28px;
         font-weight: bold;
         color: #000000;
         text-align: center;
         margin-top: 20px;
         display: inline-block;
+        font-family: Garamond;
     }
 
     /* Style the rectangle containing links */
     .rectangle3 {
         width: 216px;
         height: 1024px;
-        background-color: #D9D9D9;
+        background-color: #f1f6fa;
         position: absolute;
         top: 0px;
         left: 0px;
@@ -78,12 +86,18 @@
 
         /* Style the links in the rectangle */
         .rectangle3 a {
+            margin-top:10px;
             display: block;
             text-align: center;
             padding: 10px;
             font-size: 20px;
             color: #000000;
             text-decoration: none;
+        }
+
+        .rectangle3 a:hover{
+            background:#fff;
+            color:#000;
         }
     /* Style the table */
     .table {
@@ -176,6 +190,16 @@
         justify-content: center;
     }
 
+    
+        .forumList{
+            background-color: #BFD8EE;
+            color:#000000;
+        }
+        .forumList:Hover{
+            background-color:aliceblue;
+            color:black;
+        }
+
     .searchBox {
         width: 180px;
         margin-top: 7.5%;
@@ -203,7 +227,7 @@
     <div class="discussionList">
             <div class="navbar">
                 <span>  </span><span></span>
-                <a href="@Url.Action("ForumList", "User")">Forums</a>
+                <a class ="forumList" href="@Url.Action("ForumList", "User")">Forums</a>
                 <a class="polls">Polls</a>
                 <a class="contactUs">Contact Us</a>
                 <a asp-action="Login" asp-controller="Login" class="LogOut">Log Out</a>
@@ -221,13 +245,13 @@
 
                 <a class="myPolls">My Polls</a>
                 <a class="myMemory">My Memories</a>
-                <a class="editProfile">Edit Profile</a>
-                <a class="newAccount"> New Account</a>
+            <a href="@Url.Action("EditProfile","Login", new {Id = userId} )" class="editProfile">Edit Profile</a>
+                <a class="newAccount" asp-action="SignUp" asp-controller="Login"> New Account</a>
             </div>
             @using (Html.BeginForm())
             {
                 <p class="searchBox">
-                    Find by name: @Html.TextBox("searchString")<br />
+                    Search by keyword : @Html.TextBox("searchString")<br />
                     <br>
                     <input type="submit" class="btn btn-outline-success"  value="Search" />
                 </p>
@@ -263,7 +287,7 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>
+                            <td hidden>
                                 @Html.DisplayFor(modelItem => item.forumId)
                             </td>
                             <td>
@@ -275,7 +299,7 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.title)
                             </td>
-                            <td>
+                            <td hidden>
                                 @Html.DisplayFor(modelItem => item.content)
                             </td>
                             <td>
@@ -284,25 +308,11 @@
                             <td>
                                 <a class="btn-outline-primary" asp-action="GetForumDetails" asp-controller="Login">Look Into</a>
                             </td>
-                            <td>
-                                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-                            </td>
+                            
                         </tr>
                     }
-                }
-                else
-                {
-
                 }
             </tbody>
         </table>
     </div>
 </body>
-
-            
-        </tr>
-}
-    </tbody>
-</table>

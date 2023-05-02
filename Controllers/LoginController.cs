@@ -8,6 +8,7 @@ using System.Web;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Drawing;
+using System.Xml.Linq;
 
 namespace ForumProject.Controllers
 {
@@ -25,11 +26,16 @@ namespace ForumProject.Controllers
             Context = context;
         }
 
+
+
+
         // GET: LoginController1/Create
         public ActionResult Login()
         {
             return View();
         }
+
+
 
         // POST: LoginController1/Create
         [HttpPost]
@@ -48,13 +54,15 @@ namespace ForumProject.Controllers
                 if (reader.HasRows)
                 {
                     reader.Read();
+                    int userId = (int) reader["Id"]; 
                     string name = (string)reader["Name"];
                     string email = (string)reader["Email"];
                     string psw = (string)reader["Password"];
                     if(user.Email==email && user.Password == psw)
                     {
                         Context.HttpContext.Session.SetString("UserName", name);
-                        return RedirectToAction("DiscussionList", "User", new {Id = user.Id});
+                        Context.HttpContext.Session.SetInt32("UserId", userId);
+                        return RedirectToAction("DiscussionList", "User", new { Id = userId});
                     }
                     else
                     {
@@ -74,11 +82,17 @@ namespace ForumProject.Controllers
                 return View();
             }
         }
+
+
+
         //GET: LoginController/SignUp
         public ActionResult SignUp()
         {
             return View();
         }
+
+
+
 
         // POST: LoginController1/Create
         [HttpPost]
@@ -123,11 +137,17 @@ namespace ForumProject.Controllers
             }
         }
 
+
+
+
         //GET: LoginController/SignUp
         public ActionResult ChangePassword()
         {
             return View();
         }
+
+
+
 
         // POST: LoginController1/Create
         [HttpPost]
@@ -146,13 +166,16 @@ namespace ForumProject.Controllers
                 if (reader.HasRows)
                 {
                     reader.Read();
-
                     string qn = (string)reader["SecurityQn"];
                     string ans = (string)reader["SecurityAns"];
                     if (user.securityQn == qn && user.securityAns == ans)
                     {
-                        int userId = reader.GetInt32(reader.GetOrdinal("Id"));
-                        return RedirectToAction("DiscussionList", "User", new {Id=user.Id});
+
+                        int userID = (int)reader["Id"];
+                        string userName = (string)reader["Name"];
+                        Context.HttpContext.Session.SetString("UserName", userName);
+                        Context.HttpContext.Session.SetInt32("UserId", userID);
+                        return RedirectToAction("DiscussionList", "User", new {Id=userID});
                     }
                     else
                     {
@@ -162,7 +185,7 @@ namespace ForumProject.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid Email or Password");
+                    ModelState.AddModelError(string.Empty, "Invalid Email or Security Question/Answer");
                     return View();
                 }
             }
@@ -187,10 +210,12 @@ namespace ForumProject.Controllers
         {
             try
             {
-                return RedirectToAction("DiscussionList","Login");
+
+                return RedirectToAction("DiscussionList","Login",new { Id = id });
             }
-            catch
+            catch(Exception ex)
             {
+                ModelState.AddModelError(string.Empty, ex.Message);
                 return View();
             }
         }

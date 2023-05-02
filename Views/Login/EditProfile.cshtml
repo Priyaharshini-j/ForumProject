@@ -1,0 +1,176 @@
+﻿@model ForumProject.Models.UsersModel
+@inject IHttpContextAccessor Context;
+@{
+    ViewData["Title"] = "EditProfile";
+}
+
+<style>
+    .conneKtForum {
+        position: absolute;
+        width: 180px;
+        height: 29px;
+        top: 18px;
+        left: -160px;
+        font-family: 'Garamond';
+
+        font-weight: 700;
+        font-size: 25px;
+        line-height: 29px;
+        text-align: left;
+        color: #000000;
+    }
+    .form-group{
+
+    }
+    .control-label{
+        font-family: 'Garamond';
+        font-weight: 600;
+        font-size: 22px;
+        line-height: 26px;
+        color: #2D0F6A;
+    }
+    .form-control{
+        width: 100%;
+        height: 43px;
+        background: #EFEDED;
+        border-radius: 13px;
+        margin-bottom: 20px;
+    }
+    .editProfile{
+        background-color: #bde0fe;
+        box-sizing: border-box;
+        position: relative;
+        margin:auto;
+    }
+    .navbar{
+        width: calc(100% - 240px);
+        height: 69px;
+        top: 0px;
+        margin: 0 auto; /* Center the navbar horizontally */
+        position: absolute;
+        left: 216px;
+        float: right;
+    }
+
+        .navbar a {
+            margin-top: -8px;
+            float: right;
+            margin-right: 10px;
+            margin-left: -130px;
+            padding: 12px;
+            font-size: 18px;
+            color: #000000;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+            .navbar a:Hover {
+                background-color: #E9b5e7;
+                color: black;
+            }
+
+        .navbar span {
+            float: right;
+            margin-right: 10px;
+            padding: 20px;
+            font-size: 18px;
+            margin-top: -8px;
+            color: #000;
+            text-decoration: none;
+        }
+        .EditBox{
+            position: absolute;
+            width: 442.76px;
+            height: 650px;
+            top: 122px;
+            left: 35%;
+            background: #E5CDE5;
+            border-radius: 27px;
+            transform: rotate(-0.05deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 30px;
+            display: flex;
+            justify-content: flex-start;
+        }
+        .home{
+            margin-top:10px;
+            margin-left:35%;
+            margin-bottom: 20px;
+        }
+</style>
+
+
+<body class="editProfile">
+    <div class="navbar">
+        <em class="conneKtForum">ConneKt Forum</em>
+        <span></span><span>Hi! @Context.HttpContext.Session.GetString("UserName")</span>
+        <a href="@Url.Action("ForumList", "User")">Forums</a>
+        <a class="polls">Polls</a>
+        <a class="contactUs">Contact Us</a>
+        <a asp-action="Login" asp-controller="Login" class="LogOut">Log Out</a>
+        
+    </div>
+    <br/>
+    <br/>
+    <div class="">
+        <form class="EditBox"  asp-action="EditProfile">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <em style="font-weight:600; text-align:center ; font-family:Garamond; font-size: 23px;">Change your Profile</em>
+            <br />
+            <div class="form-group" >
+                <label asp-for="Id" hidden class="control-label"></label>
+                <input asp-for="Id" hidden class="form-control" />
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" value=@Context.HttpContext.Session.GetString("UserName") />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input type="password" asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmPassword" class="control-label"></label>
+                <input type="password" asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="securityQn" class="control-label"></label>
+                <input asp-for="securityQn" class="form-control" />
+                <span asp-validation-for="securityQn" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="securityAns" class="control-label"></label>
+                <input asp-for="securityAns" class="form-control" />
+                <span asp-validation-for="securityAns" class="text-danger"></span>
+            </div>
+            <br/>
+            <br />
+            <div class="form-group" style=" text-align:center;  ">
+                <input type="submit" value="Save" style="width: 80px; font-weight:400; height: 40px; margin-bottom:30px; text-align:center; justify-content:center;" class="btn btn-primary" />
+            </div>
+            <div>
+                @{
+                    int userId = Context.HttpContext.Session.GetInt32("UserId") ?? 0;
+                }
+                <a class="home btn btn-dark btn-outline-light" href="@Url.Action("DiscussionList","User", new {Id = userId})">Back to List</a>
+            </div>
+        </form>
+       
+    </div>
+</body>
+
+@section Scripts {
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}}

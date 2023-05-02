@@ -22,26 +22,36 @@ namespace ForumProject.Controllers
             _contxt = context;
         }
         // GET: UserController
-        public ActionResult<List<ForumModel>> DiscussionList(int Id)
+        public ActionResult DiscussionList(int Id)
+        {
+            
+            return View(GetForumById(Id));
+            
+        }
+
+        public List<ForumModel> GetForumById (int Id)
         {
             _connection.Open();
             List<ForumModel> forums = new List<ForumModel>();
-            _contxt.HttpContext.Session.SetInt32("UserId",Id);
             try
             {
-                var query = "SELECT * FROM Forums WHERE @Id= Id";
+                Console.WriteLine("Inside try block");
+                var query = "SELECT * FROM Forum WHERE @Id= Id ";
+
+                Console.WriteLine("Inside query");
                 SqlCommand cmd = new SqlCommand(query, _connection);
                 cmd.Parameters.AddWithValue("@Id", Id);
                 SqlDataReader reader = cmd.ExecuteReader();
+                Console.WriteLine("executer query query");
                 while (reader.Read())
                 {
-                    
+
                     ForumModel model = new ForumModel();
                     model.forumId = (int)reader[0];
                     model.Id = (int)reader[1];
-                    model.content = (string)reader[2];
+                    model.category = (string)reader[2];
                     model.title = (string)reader[3];
-                    model.content= (string)reader[4];
+                    model.content = (string)reader[4];
                     model.forumCreated = (DateTime)reader[5];
                     forums.Add(model);
                 }
@@ -50,23 +60,25 @@ namespace ForumProject.Controllers
                 {
 
                     Console.WriteLine("Inside if");
-                    return View(forums);
+                    return forums;
                 }
                 else
                 {
 
                     Console.WriteLine("Inside else");
-                    return View();
+                    return forums;
                 }
-                
+
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Console.WriteLine("Inside catch");
                 ModelState.AddModelError(string.Empty, ex.Message);
+                return forums;
             }
-            return View();
         }
+
 
         [HttpPost]
         public ActionResult<List<ForumModel>> DiscussionList(ForumModel forum, string searchString)
@@ -75,8 +87,9 @@ namespace ForumProject.Controllers
             try
             {
                 //AND Title.Contains(searchString) || Content.Contains(searchString) || Category.Contains(searchString)
-                var query = "SELECT * FROM Forums WHERE @Id= Id ";
-                SqlCommand cmd = new SqlCommand(query, _connection);
+                //var query = "SELECT * FROM Forums WHERE @Id= Id ";
+                SqlCommand cmd = new SqlCommand("ForumbyId", _connection);
+                cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@Id", forum.Id);
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
