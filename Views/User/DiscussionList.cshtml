@@ -78,7 +78,7 @@
     /* Style the rectangle containing links */
     .rectangle3 {
         width: 216px;
-        height: 100%;
+        height: 1024px;
         background-color: #E9b5e7;
         position: absolute;
         top: 0px;
@@ -104,12 +104,13 @@
 
 
     /* Style the table */
-    .table {
+    .table, .card {
         width: calc(100% - 382px);
         margin-top: 3%;
         border-collapse: collapse;
-        margin-left:20%;
+        margin-left:5%;
         left:216px;
+        border-radius:7px;
     }
 
         .table th,
@@ -233,6 +234,14 @@
 
     }
 
+    .card:nth-child(even) {
+        background-color: beige;
+    }
+
+    .card:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
 
     .myForums{
         background-color: #F3D1DC;
@@ -253,9 +262,10 @@
                 <img src="~/css/logo.png" class="logo" />
                 <p class="ConneKt">ConneKt</p>
             @{
+                string userEmail= Context.HttpContext.Session.GetString("UserEmail");
                 int userId = Context.HttpContext.Session.GetInt32("UserId") ?? 0;
             }
-            <a href="@Url.Action("DiscussionList", "User", new { Id = userId})" class="myForums btn-active btn-outline-primary">
+            <a href="@Url.Action("DiscussionList", "User", new { Id = userEmail})" class="myForums btn-active btn-outline-primary">
                 My Forums
             </a>
 
@@ -276,66 +286,34 @@
         }
         <a asp-action="Create" asp-controller="User" class="createForum btn btn-outline-primary">Create New Forum</a>
             <table class="table">
-                <thead>
-                    <tr>
-                        <th hidden>
-                            @Html.DisplayNameFor(model => model.forumId)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Id)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.category)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.title)
-                        </th>
-                        <th hidden>
-                            @Html.DisplayNameFor(model => model.content)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.forumCreated)
-                        </th>
-                        <th>Actions</th>
-                        <th>CURD Operation</th>
-                    </tr>
-                </thead>
                 <tbody>
                     @if(Model != null){
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td hidden>
-                                @Html.DisplayFor(modelItem => item.forumId)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Id)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.category)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.title)
-                            </td>
-                            <td hidden>
-                                @Html.DisplayFor(modelItem => item.content)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.forumCreated)
-                            </td>
-                            <td>
-                                <a class="btn btn-outline-secondary" asp-action="GetForumDetails" asp-controller="Login">Look Into</a>
-                            </td>
-                            <td>
-                                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-                            </td>
+                            <div class="card">
+                                <div class="card-body" style="font-family:Garamond; font-size:20px;">
+                                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.title)</h5>
+                                    <p class="card-text">
+                                        <small class="text-muted">@Html.DisplayFor(modelItem => item.Email) | @Html.DisplayFor(modelItem => item.forumCreated)</small>
+                                    </p>
+                                    <p class="card-text">@Html.DisplayFor(modelItem => item.content)</p>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-text">
+                                            <small class="text-muted">@Html.DisplayFor(modelItem => item.category)</small>
+                                        </p>
+                                        <div class="btn-group">
+                                            <a class="btn btn-outline-secondary" href="@Url.ActionLink("AddReply", "User", new {id = item.forumId})">Look Into</a>
+                                            <a class="btn btn-light btn-outline-primary" href="@Url.ActionLink("Edit", "User", new {id = item.forumId})">Edit</a>
+                                            <a class="btn btn-outline-danger" href="@Url.ActionLink("Delete", "User", new {id = item.forumId})">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </tr>
-                    }
-                    }
-                        
-                      </tbody>
-            </table>
+                        }}
+                    </tbody>
+                </table>
             </div>
         </div>    
 </body>

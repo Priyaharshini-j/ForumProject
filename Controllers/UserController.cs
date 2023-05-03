@@ -5,6 +5,7 @@ using NuGet.Protocol.Plugins;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Policy;
 
 namespace ForumProject.Controllers
@@ -13,60 +14,54 @@ namespace ForumProject.Controllers
     {
         IConfiguration _configuration;
         SqlConnection _connection;
-
-        private readonly IHttpContextAccessor _contxt;
+                private readonly IHttpContextAccessor Context;
 
         public UserController (IConfiguration configuration, IHttpContextAccessor context)
         {
             _configuration = configuration;
             _connection = new SqlConnection(_configuration.GetConnectionString("OnlineForum"));
-            _contxt = context;
+            Context = context;
         }
         // GET: UserController
-        public ActionResult DiscussionList(int Id)
+        public ActionResult DiscussionList(string Id)
         {
             
             return View(GetForumById(Id));
             
         }
 
-        public List<ForumModel> GetForumById (int Id)
+        public List<ForumModel> GetForumById (string Email)
         {
             _connection.Open();
             List<ForumModel> forums = new List<ForumModel>();
             try
             {
-                Console.WriteLine("Inside try block");
-                var query = "SELECT * FROM Forum WHERE @Id= Id ";
-
-                Console.WriteLine("Inside query");
-                SqlCommand cmd = new SqlCommand(query, _connection);
-                cmd.Parameters.AddWithValue("@Id", Id);
+                SqlCommand cmd = new SqlCommand("ForumById", _connection);
+                Console.WriteLine("Connected"); 
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Email", Email);
                 SqlDataReader reader = cmd.ExecuteReader();
-                Console.WriteLine("executer query query");
+                Console.WriteLine("Exec");
                 while (reader.Read())
                 {
-
+                    Console.WriteLine("Reading");
                     ForumModel model = new ForumModel();
                     model.forumId = (int)reader[0];
-                    model.Id = (int)reader[1];
+                    model.Email = (string)reader[1];
                     model.category = (string)reader[2];
                     model.title = (string)reader[3];
                     model.content = (string)reader[4];
                     model.forumCreated = (DateTime)reader[5];
                     forums.Add(model);
                 }
-                Console.WriteLine("Outside if");
                 if (forums.Count > 0)
                 {
-
-                    Console.WriteLine("Inside if");
+                    Console.WriteLine("Inside the count > 0");
                     return forums;
                 }
                 else
                 {
-
-                    Console.WriteLine("Inside else");
+                    Console.WriteLine("Inside the count = 0");
                     return forums;
                 }
 
@@ -74,7 +69,7 @@ namespace ForumProject.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Inside catch");
+                Console.WriteLine("Catch");
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return forums;
             }
@@ -84,21 +79,20 @@ namespace ForumProject.Controllers
         [HttpPost]
         public ActionResult<List<ForumModel>> DiscussionList(ForumModel forum, string searchString)
         {
-            _connection.Open(); List<ForumModel> forums = new List<ForumModel>();
+            _connection.Open(); 
+            List<ForumModel> forums = new List<ForumModel>();
             try
             {
-                //AND Title.Contains(searchString) || Content.Contains(searchString) || Category.Contains(searchString)
-                //var query = "SELECT * FROM Forums WHERE @Id= Id ";
-                SqlCommand cmd = new SqlCommand("ForumbyId", _connection);
+                SqlCommand cmd = new SqlCommand("ForumById", _connection);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@Id", forum.Id);
+                cmd.Parameters.AddWithValue("@Id", forum.Email);
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
 
                     ForumModel model = new ForumModel();
                     model.forumId = (int)reader[0];
-                    model.Id = (int)reader[1];
+                    model.Email = (string)reader[1];
                     model.content = (string)reader[2];
                     model.title = (string)reader[3];
                     model.content = (string)reader[4];
@@ -127,6 +121,63 @@ namespace ForumProject.Controllers
         {
             return View(GetAllForums());
         }
+        [HttpPost]
+        public ActionResult <List<ForumModel>> ForumList(string searchString, ForumModel forum)
+        {
+            _connection.Open();
+            List<ForumModel> forums = new List<ForumModel>();
+            try
+            {
+                SqlCommand cmd = new SqlCommand("FetchAllForum", _connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+
+                    ForumModel model = new ForumModel();
+                    model.forumId = (int)reader[0];
+                    model.Email = (string)reader[1];
+                    model.content = (string)reader[2];
+                    model.title = (string)reader[3];
+                    model.content = (string)reader[4];
+                    model.forumCreated = (DateTime)reader[5];
+                    forums.Add(model);
+                }
+                List<ForumModel> search = new List<ForumModel>(); 
+                string searchLower = searchString.ToLower();
+                // convert search string to lowercase
+                
+                foreach (ForumModel model in forums)
+                {
+                    Console.WriteLine(model.title + " " + model.content);
+                    if (model.title.ToLower().Contains(searchLower))
+                    {
+                        search.Add(model);
+                        Console.WriteLine(search.Count);
+                    }
+                    
+                    else if (model.content.ToLower().Contains(searchLower))
+                    {
+
+                        search.Add(model);
+                        Console.WriteLine(search.Count);
+                    }
+                    else 
+                    {
+                        Console.WriteLine("In else block");
+                        continue;
+                    }
+                }
+
+                return View(search);
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+            return View();
+        }
 
         public List<ForumModel> GetAllForums()
         {
@@ -141,7 +192,7 @@ namespace ForumProject.Controllers
                 {
                     ForumModel model = new ForumModel();
                     model.forumId = (int)dr1[0];
-                    model.Id = (int)dr1[1];
+                    model.Email = (string)dr1[1];
                     model.category = (string)dr1[2];
                     model.title = (string)(dr1[3]);
                     model.content = dr1.GetString(4);
@@ -190,11 +241,13 @@ namespace ForumProject.Controllers
             }
         }
 
-        //GET:UserController/ForumAndReplies
-        public ActionResult ForumAndReplies(int id)
+
+        // GET: DiscussionController/Details/5
+        public IActionResult AddReply(int id)
         {
+
             var discussion = GetDiscussionById(id);
-            var replies = GetRepliesByDiscussionId(id);
+            var replyList = GetRepliesByDiscussionId(id);
 
             if (discussion == null)
             {
@@ -202,60 +255,59 @@ namespace ForumProject.Controllers
             }
 
             ViewBag.Discussion = discussion;
-            ViewBag.Replies = replies;
+            ViewBag.Replies = replyList;
 
             var model = new DiscussionViewModel
             {
                 forum = discussion,
-                repliesList = replies,
-                replies = new RepliesModel { forumId = id }
+                replies = replyList,
+                newReply = new RepliesModel { forumId = id }
             };
 
             return View(model);
         }
 
-        //POST: UserCOntroller/ForumAndRelies
-        public ActionResult ForumAndRelies(RepliesModel newReply)
+        // POST: DiscussionController/Details/5
+        [HttpPost]
+        public ActionResult AddReply(RepliesModel newReply)
         {
             if (ModelState.IsValid)
             {
-                var connection = new SqlConnection(_configuration.GetConnectionString("Users"));
+                var connection = new SqlConnection(_configuration.GetConnectionString("OnlineForum"));
                 connection.Open();
-                //  Have to change
-                /*
-                string query = "INSERT INTO dbo.Replies (ForumId, Id, Content, ReplyCreated) VALUES (@DiscussionId, @Email, @Content, @ReplyCreated)";
+                string query = "INSERT INTO Replies VALUES (@DiscussionId, @Email, @Content, @ReplyCreated)";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
-                cmd.Parameters.AddWithValue("@ForumId", newReply.forumId);
-                cmd.Parameters.AddWithValue("@Email", newReply.Id);
+                cmd.Parameters.AddWithValue("@DiscussionId", newReply.forumId);
+                cmd.Parameters.AddWithValue("@Email", newReply.Email);
                 cmd.Parameters.AddWithValue("@Content", newReply.replyContent);
                 cmd.Parameters.AddWithValue("@ReplyCreated", DateTime.Now);
-                */
+
                 cmd.ExecuteNonQuery();
                 connection.Close();
 
-                return RedirectToAction("Details", new { id = newReply.forumId });
+                return RedirectToAction("AddReply", new { id = newReply.forumId });
             }
 
 
 
             // If model state is invalid, return to the same page with the model to show validation errors
             var discussion = GetDiscussionById(newReply.forumId);
-            var replies = GetRepliesByDiscussionId(newReply.forumId);
+            var replies_List = GetRepliesByDiscussionId(newReply.forumId);
 
             var model = new DiscussionViewModel
             {
                 forum = discussion,
-                repliesList = replies,
-                replies = newReply
+                replies = replies_List,
+                newReply = newReply
             };
 
-            return View("ForumList");
+            return View("Details", model);
         }
 
         private ForumModel GetDiscussionById(int id)
         {
-            ForumModel discussion =new();
+            ForumModel discussion = null;
 
             using (var connection = new SqlConnection(_configuration.GetConnectionString("OnlineForum")))
             {
@@ -267,38 +319,42 @@ namespace ForumProject.Controllers
                 {
                     discussion = new ForumModel
                     {
-                        Id = (int)dr["Id"],
+                        forumId = (int)dr["ForumId"],
                         Email = (string)dr["Email"],
-                        topic = (string)dr["Title"],
-                        description = (string)dr["Description"],
-                        forumCreated = (DateTime)dr["DateCreated"]
+                        category = (string)dr["Category"],
+                        title = (string)dr["Title"],
+                        content = (string)dr["Content"],
+                        forumCreated = (DateTime)dr["CreatedDate"]
                     };
                 }
                 dr.Close();
             }
-
-            return discussion;
+            if(discussion != null)
+            {
+                return discussion;
+            }
+            return new ForumModel();
         }
 
         private List<RepliesModel> GetRepliesByDiscussionId(int id)
         {
             List<RepliesModel> replies = new List<RepliesModel>();
 
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("Users")))
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("OnlineForum")))
             {
                 connection.Open();
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Reply WHERE DiscussionId=@DiscussionId ORDER BY ReplyCreated ASC", connection);
-                cmd.Parameters.AddWithValue("@DiscussionId", id);
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Replies WHERE ForumId=@ForumId ORDER BY ReplyCreated DESC", connection);
+                cmd.Parameters.AddWithValue("@ForumId", id);
                 SqlDataReader dr = cmd.ExecuteReader();
                 while (dr.Read())
                 {
                     RepliesModel reply = new RepliesModel
                     {
-                        Id = (int)dr["Id"],
-                        DiscussionId = (int)dr["DiscussionId"],
+                        replyId = (int)dr["ReplyId"],
+                        forumId = (int)dr["ForumId"],
                         Email = (string)dr["Email"],
-                        Content = (string)dr["Content"],
-                        ReplyCreated = (DateTime)dr["ReplyCreated"]
+                        replyContent = (string)dr["ReplyContent"],
+                        replyCreated = (DateTime)dr["ReplyCreated"]
                     };
                     replies.Add(reply);
                 }
@@ -307,96 +363,5 @@ namespace ForumProject.Controllers
 
             return replies;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /*
-
-
-
-
-
-
-
-
-
-        // GET: UserController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        
-
-
-        // GET: UserController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: UserController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: UserController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: UserController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }*/
     }
 }

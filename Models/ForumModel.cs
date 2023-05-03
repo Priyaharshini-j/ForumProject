@@ -11,7 +11,7 @@ namespace ForumProject.Models
         public int forumId { get; set; }
         [Required]
         [DisplayName("Forum created by")]
-        public int Id { get; set; }
+        public string Email { get; set; }
         [Required]
         [DisplayName("Category")]
         public string category { get; set; }

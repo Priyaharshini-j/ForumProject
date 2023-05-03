@@ -31,6 +31,7 @@
     }
         /* Align links to the right corner of navbar */
         .navbar a {
+            margin-top:-2px;
             float: right;
             margin-right: 10px;
             margin-left: -130px;
@@ -46,14 +47,6 @@
                 color: black;
         }
 
-        .navbar span {
-            float: right;
-            margin-right: 10px;
-            padding: 20px;
-            font-size: 18px;
-            color: #FFFFFF;
-            text-decoration: none;
-        }
     /* Style the logo image */
     .logo {
         width: 64px;
@@ -100,18 +93,18 @@
             color:#000;
         }
     /* Style the table */
-    .table {
-        width: calc(100% - 481px);
+    .table, .card {
+        width: calc(100% - 382px);
         margin-top: 3%;
         border-collapse: collapse;
-        margin-left: 25%;
+        margin-left: 5%;
         left: 216px;
     }
 
         .table th,
         .table td
         .table tr {
-            padding: 10px;
+            padding: 7px;
             text-align: left;
             width: calc(100% - 216px);
             left: 216px;
@@ -201,32 +194,49 @@
         }
 
     .searchBox {
-        width: 180px;
+        display: inline-flex;
+        width: 300px;
         margin-top: 7.5%;
         margin-left: 25%;
-        left: 216px;
         border-radius: 27px;
+        height: 40px;
     }
 
         .searchBox input[type="text"] {
+            display: inline-block;
+            width: 70%;
             border: 1px solid #ccc;
             padding: 5px;
             font-size: 16px;
             border-radius: 5px;
             box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-            width: 300px;
             place-holder: Search for Keyword;
         }
+
+        .searchBox input[type="submit"] {
+            display: inline-block;
+            width: 25%;
+            margin-left: 5px;
+            padding: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+        }
+
     .createForum {
-        left: 216px;
+        margin-top: 10px;
         margin-left: 25%;
-        margin-top: 1%;
+        left: 216px;
+        width: fit-content;
     }
+
+
 </style>
 <body>
     <div class="discussionList">
             <div class="navbar">
-                <span>  </span><span></span>
+            <span></span><span></span><span></span>
+            
                 <a class ="forumList" href="@Url.Action("ForumList", "User")">Forums</a>
                 <a class="polls">Polls</a>
                 <a class="contactUs">Contact Us</a>
@@ -237,9 +247,11 @@
                 <img src="~/css/logo.png" class="logo" />
                 <p class="ConneKt">ConneKt</p>
             @{
+                string Email = Context.HttpContext.Session.GetString("UserEmail");
                 int userId = Context.HttpContext.Session.GetInt32("UserId") ?? 0;
+
             }
-            <a href="@Url.Action("DiscussionList", "User", new { Id =userId })" class="myForums">
+            <a href="@Url.Action("DiscussionList", "User", new { Id = Context.HttpContext.Session.GetString("UserEmail")})" class="myForums">
                 My Forums
             </a>
 
@@ -249,6 +261,7 @@
             <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="editProfile">Delete Profile</a>
                 <a class="newAccount" asp-action="SignUp" asp-controller="Login"> New Account</a>
             </div>
+
             @using (Html.BeginForm())
             {
                 <p class="searchBox">
@@ -259,57 +272,31 @@
             }
         <a asp-action="Create" class="createForum btn btn-outline-primary">Create New Forum</a>
         <table class="table">
-            <thead>
-                <tr>
-                    <th hidden>
-                        @Html.DisplayNameFor(model => model.forumId)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Id)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.category)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.title)
-                    </th>
-                    <th hidden>
-                        @Html.DisplayNameFor(model => model.content)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.forumCreated)
-                    </th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
+            
             <tbody>
+
                 @if (Model != null)
                 {
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td hidden>
-                                @Html.DisplayFor(modelItem => item.forumId)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Id)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.category)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.title)
-                            </td>
-                            <td hidden>
-                                @Html.DisplayFor(modelItem => item.content)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.forumCreated)
-                            </td>
-                            <td>
-                                <a class="btn-outline-primary" asp-action="GetForumDetails" asp-controller="Login">Look Into</a>
-                            </td>
-                            
+                            <div class="card">
+                                <div class="card-body" style="font-family:Garamond; font-size:20px;">
+                                    <h5 class="card-title" style="font-weight:700">@Html.DisplayFor(modelItem => item.title)</h5>
+                                    <p class="card-text">
+                                        <small class="text-muted">@Html.DisplayFor(modelItem => item.Email) | @Html.DisplayFor(modelItem => item.forumCreated)</small>
+                                    </p>
+                                    <p class="card-text">@Html.DisplayFor(modelItem => item.content)</p>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-text">
+                                            <small class="text-muted">@Html.DisplayFor(modelItem => item.category)</small>
+                                        </p>
+                                        <div class="btn-group">
+                                            <a class="btn btn-outline-secondary" href="@Url.ActionLink("AddReply", "User", new {id = item.forumId})">Look Into</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </tr>
                     }
                 }

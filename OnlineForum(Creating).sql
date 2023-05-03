@@ -9,25 +9,28 @@ Password VARCHAR(50) NOT NULL,
 SecurityQn VARCHAR(MAX),
 SecurityAns VARCHAR(225));
 
+
 --Creating a table with Discussion Forum
 CREATE TABLE Forum(
 ForumId INT IDENTITY(1,1) PRIMARY KEY,
 --Id means UserId 
-Id INT NOT NULL,
+Email VARCHAR(90) NOT NULL,
 Category NVARCHAR(70) NOT NULL,
 Title NVARCHAR(125) UNIQUE NOT NULL,
 Content NVARCHAR(MAX) NOT NULL,
 CreatedDate DATETIME DEFAULT SYSDATETIME() NOT NULL,
-CONSTRAINT fk_Id FOREIGN KEY (Id) REFERENCES Users(Id) );
+CONSTRAINT fk_Email FOREIGN KEY (Email) REFERENCES Users(Email) );
+
+DROP TABLE Replies
 
 --Creating a tale for replies
 CREATE TABLE Replies(
 ReplyId INT IDENTITY(1,1) PRIMARY KEY,
 ForumId INT NOT NULL,
-Id INT NOT NULL,
+Email VARCHAR(90) NOT NULL,
 ReplyContent NVARCHAR(MAX) NOT NULL,
-RelpyCreated DATETIME DEFAULT SYSDATETIME() NOT NULL,
-CONSTRAINT fk_UserID FOREIGN KEY (Id) REFERENCES Users(Id),
+ReplyCreated DATETIME DEFAULT SYSDATETIME() NOT NULL,
+CONSTRAINT fk_UserEmail FOREIGN KEY (Email) REFERENCES Users(Email),
 CONSTRAINT fk_ForumId FOREIGN KEY (ForumId) REFERENCES Forum(ForumId));
 
 --Creating a table for Polls
@@ -94,18 +97,17 @@ CREATE OR ALTER PROCEDURE InsertForum
     @CreatedDate DATETIME
 AS
 BEGIN
-    DECLARE @Id INT
-    SET @Id = (SELECT ID FROM Users WHERE Email = @Email)
+    
     INSERT INTO Forum 
-    VALUES (@Id, @Category, @Title, @Content, @CreatedDate)
+    VALUES (@Email, @Category, @Title, @Content, @CreatedDate)
 END
 
 CREATE OR ALTER PROCEDURE ForumById
-@Id int
+@Email VARCHAR(90)
 AS
 BEGIN 
 SELECT * from Forum
-WHERE Id= @Id
+WHERE Email=@Email
 END
 
 CREATE OR ALTER PROCEDURE EditUser
@@ -137,3 +139,36 @@ CREATE OR ALTER PROCEDURE GetUserById
 @Id INT
 AS
 SELECT * FROM Users WHERE Id=@Id;
+
+CREATE OR ALTER PROCEDURE AppendReplies
+@ForumId int,
+@Email VARCHAR(90),
+@ReplyContent VARCHAR(MAX),
+@replyDate DATETIME
+AS
+BEGIN
+INSERT INTO Replies VALUES(@ForumId,@Email,@ReplyContent,@replyDate)
+END
+
+CREATE OR ALTER PROCEDURE GetUserId
+@Email VARCHAR(90)
+AS
+BEGIN
+SELECT Id From Users WHERE Email=@Email;
+END
+
+CREATE OR ALTER PROCEDURE ForumSearch
+@searchString VARCHAR(MAX)
+AS
+SELECT * FROM Forum WHERE Email LIKE '%@searchString%' OR
+Category LIKE '%@searchString%' OR
+Title LIKE '%@searchString%' OR
+Content LIKE '%@searchString%'
+
+EXEC ForumSearch ;
+
+
+
+
+
+

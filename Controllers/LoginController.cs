@@ -63,7 +63,8 @@ namespace ForumProject.Controllers
                         //Setting the session with username and Id
                         Context.HttpContext.Session.SetString("UserName", name);
                         Context.HttpContext.Session.SetInt32("UserId", userId);
-                        return RedirectToAction("DiscussionList", "User", new { Id = userId});
+                        Context.HttpContext.Session.SetString("UserEmail", email);
+                        return RedirectToAction("DiscussionList", "User", new { Id = user.Email});
                     }
                     else
                     {
@@ -169,11 +170,12 @@ namespace ForumProject.Controllers
                     if (user.securityQn == qn && user.securityAns == ans)
                     {
 
+                        Context.HttpContext.Session.SetString("UserEmail", user.Email);
                         int userID = (int)reader["Id"];
                         string userName = (string)reader["Name"];
                         Context.HttpContext.Session.SetString("UserName", userName);
                         Context.HttpContext.Session.SetInt32("UserId", userID);
-                        return RedirectToAction("DiscussionList", "User", new {Id=userID});
+                        return RedirectToAction("DiscussionList", "User", new {Id= user.Email});
                     }
                     else
                     {
