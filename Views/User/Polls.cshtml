@@ -1,0 +1,58 @@
+﻿@model IEnumerable<UserPoll>
+
+<h2>Available Polls</h2>
+<a asp-action="CreatePoll" asp-controller="User" class="createForum btn btn-outline-primary">Create New Forum</a>
+@if(Model!= null)
+{
+    @foreach (var poll in Model)
+    {
+        <div>
+            <h2>@poll.Email</h2>
+            <h3>@poll.Title</h3>
+            <p>@poll.Question</p>
+            <form method="post" action="Polls">
+                <input type="hidden" name="PollId" value="@poll.Id" />
+                <div>
+                    @foreach (var option in poll.Options)
+                    {
+                        <div>
+                            <input type="radio" id="option_@option.Id" name="OptionId" value="@option.Id" required />
+                            <label for="option_@option.Id">@option.OptionText</label>
+                            <div class="progress-bar" style="width: @option.VotePercentage%;"></div>
+                        </div>
+                    }
+                </div>
+                <button type="submit">Vote</button>
+            </form>
+        </div>
+    }
+}
+else
+{
+    <p> No Polls</p>
+}
+
+<style>
+    .progress-bar {
+        height: 20px;
+        background-color: #4CAF50;
+        width: 0%;
+        transition: width 1s;
+    }
+</style>
+
+<script>
+    var forms = document.getElementsByTagName("form");
+    for (var i = 0; i < forms.length; i++) {
+        forms[i].addEventListener("submit", function () {
+            var options = this.querySelectorAll("input[type='radio']");
+            for (var j = 0; j < options.length; j++) {
+                var progressBar = options[j].nextSibling.nextSibling;
+                if (options[j].checked) {
+                    var votePercentage = parseFloat(progressBar.style.width) + 100.0 / options.length;
+                    progressBar.style.width = votePercentage + "%";
+                }
+            }
+        });
+    }
+</script>

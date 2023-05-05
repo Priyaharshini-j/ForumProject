@@ -34,26 +34,16 @@ CONSTRAINT fk_UserEmail FOREIGN KEY (Email) REFERENCES Users(Email),
 CONSTRAINT fk_ForumId FOREIGN KEY (ForumId) REFERENCES Forum(ForumId));
 
 --Creating a table for Polls
-CREATE TABLE Polls(
-PollId INT IDENTITY(1,1) PRIMARY KEY,
---Id means UserId 
-Id INT NOT NULL,
-Category NVARCHAR(70) NOT NULL,
-PollTitle NVARCHAR(125) UNIQUE NOT NULL,
-CreatedDate DATETIME DEFAULT SYSDATETIME() NOT NULL,
-CONSTRAINT fk_Id_For_Polls FOREIGN KEY (Id) REFERENCES Users(Id) );
-
---Creating a table PollResult
-CREATE TABLE PollResult(
-PollRes_Id INT IDENTITY(1,1) PRIMARY KEY,
+CREATE TABLE UserVoted(
+voteId INT IDENTITY(1,1) PRIMARY KEY,
+Email VARCHAR(90) NOT NULL,
 PollId INT NOT NULL,
-UserId INT NOT NULL,
-VoteOptions NVARCHAR(200) NOT NULL,
-VoteDate DATETIME DEFAULT SYSDATETIME() NOT NULL,
-CONSTRAINT fk_pollRes_id FOREIGN KEY (UserId) REFERENCES Users(Id),
-CONSTRAINT fk_PollId FOREIGN KEY (PollId) REFERENCES Polls(PollId)
-);
+OptionId INT NOT NULL,
+FOREIGN KEY(PollId) REFERENCES UserPoll(PollId),
+FOREIGN KEY(Email) REFERENCES Users(Email)
+)
 
+DROP TABLE UserVoted;
  CREATE TABLE Memory(
  Memory_Id INT IDENTITY(1,1) PRIMARY KEY,
  UserId INT NOT NULL,
@@ -62,13 +52,35 @@ CONSTRAINT fk_PollId FOREIGN KEY (PollId) REFERENCES Polls(PollId)
  MemoryDate DATETIME DEFAULT SYSDATETIME() NOT NULL,
  CONSTRAINT fk_mem_USERID FOREIGN KEY(UserId) REFERENCES Users(Id));
 
+ CREATE TABLE UserPoll (
+    
+    PollId INT PRIMARY KEY IDENTITY(1,1),
+    Email VARCHAR(90) NOT NULL,
+    Title NVARCHAR(255) NOT NULL,
+    Category NVARCHAR(255) NOT NULL,
+    Question NVARCHAR(MAX) NOT NULL,
+    Created DATETIME2 NOT NULL DEFAULT(GETDATE())
+    FOREIGN KEY(Email) REFERENCES Users(Email)
+);
+
+CREATE TABLE PollOption (
+    VoteId INT PRIMARY KEY IDENTITY(1,1),
+    UserPollId INT NOT NULL,
+    OptionId INT NOT NULL,
+    OptionText NVARCHAR(255) NOT NULL,
+    VoteCount INT ,
+    VotePercentage DOUBLE PRECISION,
+    FOREIGN KEY (UserPollId) REFERENCES UserPoll(PollId)
+);
+
 
  SELECT * FROM Users;
  SELECT * FROM Forum;
  SELECT * FROM Replies;
- SELECT * FROM PollResult;
- SELECT * FROM Polls;
+ SELECT * FROM UserPoll;
+ SELECT * FROM PollOption;
  SELECT * FROM Memory;
+ SELECT * FROM UserVoted;
 
  --Stored procedure for inserting the user
  CREATE OR ALTER PROCEDURE InsertUser
@@ -79,8 +91,7 @@ CONSTRAINT fk_PollId FOREIGN KEY (PollId) REFERENCES Polls(PollId)
  @SecurityAns VARCHAR(225)
  AS
  BEGIN
- INSERT INTO Users
- VALUES (@Name,@Email,@Password,@SecurityQn,@SecurityAns)
+ INSERT INTO Users VALUES (@Name,@Email,@Password,@SecurityQn,@SecurityAns)
  END
 
  CREATE OR ALTER PROCEDURE FetchAllForum
@@ -167,8 +178,57 @@ Content LIKE '%@searchString%'
 
 EXEC ForumSearch ;
 
+CREATE OR ALTER PROCEDURE CreatePoll 
+@Email VARCHAR(90),
+@Title VARCHAR(255),
+@Category VARCHAR(255),
+@Question VARCHAR(MAX),
+@Created Datetime,
+@PollId INT OUTPUT
+AS
+BEGIN
+    INSERT INTO UserPoll VALUES(@Email,@Title,@Category,@Question,@Created);
+    SET @PollId = SCOPE_IDENTITY();
+    RETURN;
+END
+
+CREATE OR ALTER PROCEDURE CreateOptions
+@PollId Int,
+@OptionId Int,
+@Option VARCHAR(255)
+AS
+INSERT INTO PollOption VALUES (@PollId,@OptionId,@Option,0,0.00)
+
+
+CREATE OR ALTER PROCEDURE FetchAllPolls
+AS
+SELECT * FROM UserPoll;
+
+CREATE OR ALTER PROCEDURE FetchPollOptions
+@PollId int
+AS
+Select * FROM PollOption WHERE UserPollId = @PollId
+
+EXEC FetchPollOptions 1;
+
+
+CREATE OR ALTER PROCEDURE FetchPollsAndOptions
+AS
+BEGIN
+    SELECT 
+        up.PollId,
+        up.Email,
+        up.Title,
+        up.Category,
+        up.Question,
+        up.Created,
+        po.OptionText
+    FROM 
+        UserPoll up 
+    LEFT JOIN 
+        PollOption po ON up.PollId = po.UserPollId;
+END
 
 
 
-
-
+EXEC FetchPollsAndOptions;

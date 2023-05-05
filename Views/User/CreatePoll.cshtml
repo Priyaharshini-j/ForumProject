@@ -1,0 +1,55 @@
+﻿@model UserPoll
+
+<h2>Create New Poll</h2>
+
+<form method="post" action="CreatePoll">
+    <div>
+
+        <label for="email">Email:</label>
+        <input type="text" id="Email" name="Email" required />
+    </div>
+    <div>
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="Title" required />
+    </div>
+    <div>
+        <label for="category">Category:</label>
+        <input type="text" id="category" name="Category" required />
+    </div>
+    <div>
+        <label for="question">Question:</label>
+        <textarea id="question" name="Question" required></textarea>
+    </div>
+    <div id="options-container">
+        <label for="options">Options:</label>
+        <ul id="options">
+            <li>
+                <input type="text" name="Options[0].OptionText" required />
+            </li>
+        </ul>
+        <button type="button" id="add-option">Add Option</button>
+    </div>
+    <button type="submit">Create Poll</button>
+</form>
+
+<script>
+    var optionIndex = 1;
+    var addButton = document.getElementById("add-option");
+    var optionsList = document.getElementById("options");
+    var container = document.getElementById("options-container");
+
+    addButton.addEventListener("click", function() {
+        var newOption = document.createElement("li");
+        newOption.innerHTML = '<input type="text" name="Options[' + optionIndex + '].OptionText" required />';
+        optionsList.appendChild(newOption);
+        optionIndex++;
+
+        var removeButton = document.createElement("button");
+        removeButton.innerText = "Remove Option";
+        removeButton.addEventListener("click", function() {
+            optionsList.removeChild(newOption);
+            optionIndex--;
+        });
+        container.appendChild(removeButton);
+    });
+</script>

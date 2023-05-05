@@ -5,66 +5,139 @@
     ViewData["Title"] = "Details";
 }
 @model DiscussionViewModel
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h2>@ViewBag.Discussion.title</h2>
-<p>@ViewBag.Discussion.content</p>
-
-<hr />
-
-@if (ViewBag.Replies.Count > 0)
-{
-    foreach (var reply in ViewBag.Replies)
-    {
-        <div class="reply border-1">
-            <p>@reply.replyContent</p>
-            <p class="text-muted small">Replied by: @reply.Email on @reply.replyCreated.ToString("dd/MM/yyyy")</p>
-        </div>
-        <hr />
+@inject IHttpContextAccessor Context
+<style>
+    .body{
+        font-family:Garamond;
+        font-size: 16px;
     }
-}
-else
-{
-    <p>No replies yet.</p>
-}
+    .AddReplyPage{
+        widht:100%;
+        height:;
+        background-color:;
+    }
+    .navbar{
+        width: 100%;
+        height: 69px;
+        top: 0px;
+        margin: 0 auto; /* Center the navbar horizontally */
+        background-color: #E9b5e7;
+        position: absolute;
+        left: 216px;
+        float: right;
+    }
+    .navbar a{
+            margin-top: -8px;
+            float: right;
+            margin-right: 10px;
+            margin-left: -130px;
+            padding: 12px;
+            font-size: 18px;
+            color: #000000;
+            text-decoration: none;
+            border-radius: 5px;
+    }
 
+            .navbar a:Hover {
+                background-color: #F3D1DC;
+                color: black;
+            }
 
-<h3>Reply to this discussion</h3>
-@using (Html.BeginForm("AddReply", "User"))
-{
-    @Html.HiddenFor(model => model.newReply.forumId)
-    @Html.LabelFor(model => model.newReply.Email)
-    @Html.TextBoxFor(model => model.newReply.Email, new { @class = "form-control" })
-    @Html.LabelFor(model => model.newReply.replyContent)
-    @Html.TextAreaFor(model => model.newReply.replyContent, new { @class = "form-control" })
-    <br />
-    <button type="submit" class="btn btn-primary">Submit</button>
-}
+        .navbar span {
+            float: right;
+            margin-right: 10px;
+            padding: 20px;
+            font-size: 18px;
+            margin-top: -8px;
+            color: #000;
+            text-decoration: none;
+        }
 
+    .ConneKt {
+        font-size: 28px;
+        font-weight: bold;
+        color: #000000;
+        text-align: center;
+        margin-top: 20px;
+        display: inline-block;
+        font-family: Garamond;
+    }
+    .discussionTitle{
+
+    }
+    .discussionContent{
+    
+    }
+    .card , .table{
+        width: calc(100% - 382px);
+        margin-top: 3%;
+        border-collapse: collapse;
+        margin-left: 5%;
+        left: 216px;
+    }
+    .table tr{
+            padding: 10px;
+            text-align: center;
+            width: calc(100% - 216px);
+            left: 216px;
+            justify-content: center;
+            font-family: Garamond;
+    }
+
+        .card:nth-child(even) {
+            background-color: beige;
+        }
+
+        .card:nth-child(odd) {
+            background-color: #ffffff;
+        }
+</style>
+<body class="AddReplyPage">
+    <div class="navbar">
+        <em class="ConneKt">ConneKt Forum</em>
+        <span></span><span>Hi! @Context.HttpContext.Session.GetString("UserName")</span>
+        <a href="@Url.Action("ForumList", "User")">Forums</a>
+        <a class="polls">Polls</a>
+        <a class="contactUs">Contact Us</a>
+        <a asp-action="Login" asp-controller="Login" class="LogOut">Log Out</a>
+    </div>
+    <table class="table">
+
+        <h2 class="dicussionTitle">@ViewBag.Discussion.title</h2>
+        <p class="discussionContent">@ViewBag.Discussion.content</p>
+        <tr>
+            <div class="card">
+                <div class="card-body">
+                    @if (ViewBag.Replies.Count > 0)
+                    {
+                        foreach (var reply in ViewBag.Replies)
+                        {
+                            <div class="reply border-1">
+                                <p>@reply.replyContent</p>
+                                <p class="text-muted small">Replied by: @reply.Email on @reply.replyCreated.ToString("dd/MM/yyyy")</p>
+                            </div>
+                            <hr />
+                        }
+                    }
+                    else
+                    {
+                        <p>No replies yet.</p>
+                    }
+                </div>
+            </div>
+        </tr>
+        <tr>
+            <h3>Reply to this discussion</h3>
+            @using (Html.BeginForm("AddReply", "User"))
+            {
+                @Html.HiddenFor(model => model.newReply.forumId)
+                @Html.LabelFor(model => model.newReply.Email)
+                @Html.TextBoxFor(model => model.newReply.Email, new { @class = "form-control" })
+                @Html.LabelFor(model => model.newReply.replyContent)
+                @Html.TextAreaFor(model => model.newReply.replyContent, new { @class = "form-control" })
+                <br />
+                <button type="submit" class="btn btn-primary">Submit</button>
+            }
+        </tr>
+    </table>
+</body>

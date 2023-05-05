@@ -6,8 +6,8 @@
 <style>
     /* Set default font family and size */
     body {
-        font-family: Arial, sans-serif;
-        font-size: 16px;
+        font-family: Garamond, sans-serif;
+        font-size: 20px;
     }
 
     /* Set background color and size for the main container */
@@ -35,14 +35,14 @@
             margin-right: 10px;
             margin-left: -130px;
             padding: 12px;
-            font-size: 18px;
+            font-size:22px;
             color: #000000;
             text-decoration: none;
             border-radius: 5px;
         }
 
             .navbar a:Hover {
-                background-color: #F3D1DC;
+                background-color: #FFFFFF;
                 color: black;
             }
 
@@ -79,7 +79,7 @@
     .rectangle3 {
         width: 216px;
         height: 1024px;
-        background-color: #E9b5e7;
+        background-color: #c4adcf;
         position: absolute;
         top: 0px;
         left: 0px;
@@ -235,13 +235,15 @@
     }
 
     .card:nth-child(even) {
-        background-color: beige;
+        background-color: #EEEFFF;
     }
 
     .card:nth-child(odd) {
         background-color: #ffffff;
     }
-
+    .text-muted{
+        color:blue;
+    }
 
     .myForums{
         background-color: #F3D1DC;
@@ -253,7 +255,7 @@
             <div class="navbar">
                 <span></span><span>Hi! @Context.HttpContext.Session.GetString("UserName")</span>
                 <a href="@Url.Action("ForumList", "User")">Forums</a>
-                <a class="polls">Polls</a>
+                <a class="polls" asp-action="Polls" asp-controller="User">Polls</a>
                 <a class="contactUs">Contact Us</a>
                 <a asp-action="Login" asp-controller="Login" class="LogOut">Log Out</a>
             </div>
@@ -269,7 +271,7 @@
                 My Forums
             </a>
 
-                <a class="myPolls">My Polls</a>
+                <a class="myPolls" >My Polls</a>
                 <a class="myMemory">My Memories</a>
                 <a href="@Url.Action("EditProfile","Login", new {Id = userId} )" class="editProfile">Edit Profile</a>
                 <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="deleteProfile">Delete Profile</a>
@@ -299,8 +301,8 @@
                                     </p>
                                     <p class="card-text">@Html.DisplayFor(modelItem => item.content)</p>
                                     <div class="d-flex justify-content-between">
-                                        <p class="card-text">
-                                            <small class="text-muted">@Html.DisplayFor(modelItem => item.category)</small>
+                                        <p class="card-text" style="color: #5084AA">
+                                            <small class="text-muted" >@Html.DisplayFor(modelItem => item.category)</small>
                                         </p>
                                         <div class="btn-group">
                                             <a class="btn btn-outline-secondary" href="@Url.ActionLink("AddReply", "User", new {id = item.forumId})">Look Into</a>
