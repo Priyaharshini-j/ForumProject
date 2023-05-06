@@ -10,14 +10,14 @@
         width: 180px;
         height: 29px;
         top: 18px;
-        left: -160px;
-        font-family: 'Garamond';
+        left: 27px;
+        font-family: 'Times New Roman', Times, serif;
 
         font-weight: 700;
         font-size: 25px;
         line-height: 29px;
         text-align: left;
-        color: #000000;
+        color: #000;
     }
     .form-group{
 
@@ -37,30 +37,32 @@
         margin-bottom: 20px;
     }
     .editProfile{
-        background-color: #bde0fe;
+        background-color: #90CAF9;
         box-sizing: border-box;
         position: relative;
         margin:auto;
+        font-family: 'Times New Roman', Times, serif;
     }
     .navbar{
-        width: calc(100% - 240px);
+        width: 100%;
         height: 69px;
         top: 0px;
         margin: 0 auto; /* Center the navbar horizontally */
         position: absolute;
-        left: 216px;
+        left: 0px;
         float: right;
-        border: solid 0.25mm;
+        border-bottom: solid 0.25mm;
+        color:#000000;
     }
 
         .navbar a {
             margin-top: -8px;
             float: right;
-            margin-right: 10px;
-            margin-left: -130px;
+            margin-right: 0px;
+            margin-left: -500px;
             padding: 12px;
             font-size: 18px;
-            color: #000000;
+            color: #000;
             text-decoration: none;
             border-radius: 5px;
         }
@@ -72,7 +74,7 @@
 
         .navbar span {
             float: right;
-            margin-right: 10px;
+            margin-right: 5px;
             padding: 20px;
             font-size: 18px;
             margin-top: -8px;
@@ -82,10 +84,10 @@
         .EditBox{
             position: absolute;
             width: 472.76px;
-            height: 750px;
+            height: fit-content;
             top: 122px;
             left: 35%;
-            background: #E5CDE5;
+        background: #F8BBD0;
             border-radius: 27px;
             transform: rotate(-0.05deg);
             display: flex;
@@ -130,7 +132,7 @@
                 <input asp-for="Name" class="form-control" value=@Context.HttpContext.Session.GetString("UserName") />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>

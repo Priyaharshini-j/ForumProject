@@ -255,7 +255,7 @@
             <div class="navbar">
                 <span></span><span>Hi! @Context.HttpContext.Session.GetString("UserName")</span>
                 <a href="@Url.Action("ForumList", "User")">Forums</a>
-                <a class="polls" asp-action="Polls" asp-controller="User">Polls</a>
+            <a class="polls" href="@Url.Action("Polls","User")">Polls</a>
                 <a class="contactUs">Contact Us</a>
                 <a asp-action="Login" asp-controller="Login" class="LogOut">Log Out</a>
             </div>
@@ -306,8 +306,8 @@
                                         </p>
                                         <div class="btn-group">
                                             <a class="btn btn-outline-secondary" href="@Url.ActionLink("AddReply", "User", new {id = item.forumId})">Look Into</a>
-                                            <a class="btn btn-light btn-outline-primary" href="@Url.ActionLink("Edit", "User", new {id = item.forumId})">Edit</a>
-                                            <a class="btn btn-outline-danger" href="@Url.ActionLink("Delete", "User", new {id = item.forumId})">Delete</a>
+                                            <a class="btn btn-light btn-outline-primary" href="@Url.ActionLink("EditForum", "User", new {id = item.forumId})">Edit</a>
+                                            <a class="btn btn-outline-danger" href="@Url.ActionLink("DeleteForum", "User", new {id = item.forumId})">Delete</a>
                                         </div>
                                     </div>
                                 </div>

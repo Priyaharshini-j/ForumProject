@@ -84,10 +84,6 @@ namespace ForumProject.Controllers
                 return View();
             }
         }
-
-
-
-
         //Get Method of SignUp Page
         //GET: LoginController/SignUp
         public ActionResult SignUp()
@@ -216,7 +212,6 @@ namespace ForumProject.Controllers
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("Id", id);
                     cmd.Parameters.AddWithValue("@Name", user.Name);
-                    cmd.Parameters.AddWithValue("@Email", user.Email);
                     cmd.Parameters.AddWithValue("@Password", user.Password);
                     cmd.Parameters.AddWithValue("@SecurityQn", user.securityQn);
                     cmd.Parameters.AddWithValue("@SecurityAns", user.securityAns);
@@ -289,8 +284,10 @@ namespace ForumProject.Controllers
                 }
                 return RedirectToAction(nameof(Login));
             }
-            catch
+            catch(Exception ex)
             {
+                Console.WriteLine(ex.Message);
+                ViewBag.Message = ex.Message;
                 return View();
             }
         }

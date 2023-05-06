@@ -2,7 +2,7 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Forum Replies";
 }
 @model DiscussionViewModel
 @inject IHttpContextAccessor Context
@@ -21,9 +21,9 @@
         height: 69px;
         top: 0px;
         margin: 0 auto; /* Center the navbar horizontally */
-        background-color: #E9b5e7;
+        background-color: #B2EBF2;
         position: absolute;
-        left: 216px;
+        left: 0px;
         float: right;
     }
     .navbar a{
@@ -39,7 +39,7 @@
     }
 
             .navbar a:Hover {
-                background-color: #F3D1DC;
+                background-color:beige;
                 color: black;
             }
 
@@ -63,17 +63,19 @@
         font-family: Garamond;
     }
     .discussionTitle{
-
+        margin-top:10px;
+        align-content:center;
+        justify-content:center;
     }
     .discussionContent{
     
     }
     .card , .table{
-        width: calc(100% - 382px);
+        width: calc(100% - 216px);
         margin-top: 3%;
         border-collapse: collapse;
         margin-left: 5%;
-        left: 216px;
+        left: 155px;
     }
     .table tr{
             padding: 10px;
@@ -83,61 +85,134 @@
             justify-content: center;
             font-family: Garamond;
     }
-
+    .discussionTitle{
+        margin-top: 12px;
+    }
+    .discussionContent{
+        margin-top:32px;
+    }
+    .Forum{
+        margin-top:5%;
+        left=0px;
+    }
         .card:nth-child(even) {
-            background-color: beige;
+        background-color: #EEEEEE;
         }
 
         .card:nth-child(odd) {
             background-color: #ffffff;
         }
+        .NewReply{
+            left:-10px;
+            width:calc(100%-116px);
+            margin-top:3%;
+        }
+
+    .rectangle3 {
+        width: 216px;
+        height: 1024px;
+        background-color: #B2EBF2;
+        position: absolute;
+        top: 69px;
+        margin-top: 0px;
+        left: 0px;
+    }
+
+        /* Style the links in the rectangle */
+        .rectangle3 a {
+            margin-top: 15px;
+            display: block;
+            text-align: center;
+            padding: 10px;
+            font-size: 20px;
+            color: #000000;
+            text-decoration: none;
+        }
+
+
+            .rectangle3 a:hover {
+                background: beige;
+                color: #000;
+            }
 </style>
 <body class="AddReplyPage">
     <div class="navbar">
         <em class="ConneKt">ConneKt Forum</em>
         <span></span><span>Hi! @Context.HttpContext.Session.GetString("UserName")</span>
         <a href="@Url.Action("ForumList", "User")">Forums</a>
-        <a class="polls">Polls</a>
+        <a class="polls"  href="@Url.Action("Polls","User")"   >Polls</a>
         <a class="contactUs">Contact Us</a>
         <a asp-action="Login" asp-controller="Login" class="LogOut">Log Out</a>
     </div>
-    <table class="table">
+    <div class="rectangle3">
+        @{
+            string userEmail = Context.HttpContext.Session.GetString("UserEmail");
+            int userId = Context.HttpContext.Session.GetInt32("UserId") ?? 0;
+        }
+        <a href="@Url.Action("DiscussionList", "User", new { Id = userEmail})" class="myForums btn-active btn-outline-primary">
+            My Forums
+        </a>
 
-        <h2 class="dicussionTitle">@ViewBag.Discussion.title</h2>
-        <p class="discussionContent">@ViewBag.Discussion.content</p>
-        <tr>
-            <div class="card">
-                <div class="card-body">
-                    @if (ViewBag.Replies.Count > 0)
-                    {
-                        foreach (var reply in ViewBag.Replies)
+        <a class="myPolls">My Polls</a>
+        <a class="myMemory">My Memories</a>
+        <a href="@Url.Action("EditProfile","Login", new {Id = userId} )" class="editProfile">Edit Profile</a>
+        <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="deleteProfile">Delete Profile</a>
+        <a class="newAccount" asp-action="SignUp" asp-controller="Login"> New Account</a>
+    </div>
+
+    <div class="Forum">
+        <table class="table">
+            <br />
+            <tr>
+                <div class="card">
+                    <div class="card-body">
+                        <h4>@ViewBag.Discussion.title</h4>
+                        <br />
+                        <p style="border: solid 1 medium">@ViewBag.Discussion.content</p>
+                        <br />
+                        </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                        @if (ViewBag.Replies.Count > 0)
                         {
-                            <div class="reply border-1">
-                                <p>@reply.replyContent</p>
-                                <p class="text-muted small">Replied by: @reply.Email on @reply.replyCreated.ToString("dd/MM/yyyy")</p>
-                            </div>
-                            <hr />
+                            foreach (var reply in ViewBag.Replies)
+                            {
+                                <div class="reply border-1">
+                                    <p>@reply.replyContent</p>
+                                    <p class="text-muted small">Replied by: @reply.Email on @reply.replyCreated.ToString("dd/MM/yyyy")</p>
+                                </div>
+                                <hr />
+                            }
                         }
-                    }
-                    else
-                    {
-                        <p>No replies yet.</p>
-                    }
+                        else
+                        {
+                            <p>No replies yet.</p>
+                        }
+                    </div>
                 </div>
-            </div>
-        </tr>
-        <tr>
-            <h3>Reply to this discussion</h3>
-            @using (Html.BeginForm("AddReply", "User"))
-            {
-                @Html.HiddenFor(model => model.newReply.forumId)
-                @Html.LabelFor(model => model.newReply.Email)
-                @Html.TextBoxFor(model => model.newReply.Email, new { @class = "form-control" })
-                @Html.LabelFor(model => model.newReply.replyContent)
-                @Html.TextAreaFor(model => model.newReply.replyContent, new { @class = "form-control" })
-                <br />
-                <button type="submit" class="btn btn-primary">Submit</button>
-            }
-        </tr>
-    </table>
+            </tr>
+            
+            <br />
+            <tr>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="NewReply">
+                            <h3>Reply to this discussion</h3>
+                            @using (Html.BeginForm("AddReply", "User"))
+                            {
+                                @Html.HiddenFor(model => model.newReply.forumId)
+                                @Html.LabelFor(model => model.newReply.Email)
+                                @Html.TextBoxFor(model => model.newReply.Email, new { @class = "form-control" })
+                                @Html.LabelFor(model => model.newReply.replyContent)
+                                @Html.TextAreaFor(model => model.newReply.replyContent, new { @class = "form-control" })
+                                <br />
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </tr>
+        </table>
+    </div>
 </body>

@@ -17,6 +17,7 @@ namespace ForumProject
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(360);
             });
+            builder.Services.AddHttpContextAccessor();
 
 
             var app = builder.Build();

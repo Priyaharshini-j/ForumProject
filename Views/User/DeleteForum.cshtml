@@ -1,19 +1,13 @@
-﻿@model ForumProject.Models.UsersModel
-@inject IHttpContextAccessor Context;
+﻿@model ForumProject.Models.ForumModel
 @{
-    ViewData["Title"] = "DeleteProfile";
+    ViewData["Title"] = "DeleteForum";
 }
-
 <style>
     .deletePage {
-        background-color: #C5CAE9;
+        background-color: #F3cde5;
         box-sizing: border-box;
         position: relative;
         margin: auto;
-        font-family:'Times New Roman', Times, serif;
-    }
-    .ErrorMessage{
-        top:74px;
     }
 
     .navbar {
@@ -28,17 +22,16 @@
     }
 
         .navbar a {
-            margin-top: -8px;
+            margin-top: -13px;
             float: right;
-            margin-right: 10px;
-            margin-left: -130px;
+            margin-right: 4px;
+            margin-left: 164px;
             padding: 12px;
             font-size: 20px;
-            color: #000;
+            color: #000000;
             text-decoration: none;
             border-radius: 5px;
-            font-weight:500;
-
+            font-weight: 500;
         }
 
             .navbar a:Hover {
@@ -55,6 +48,7 @@
             color: #000;
             text-decoration: none;
         }
+
     .conneKtForum {
         position: absolute;
         width: 200px;
@@ -66,15 +60,16 @@
         font-size: 27px;
         line-height: 29px;
         text-align: left;
-        color: #000;
+        color: #000000;
     }
-    .deleteBox{
+
+    .deleteBox {
         position: absolute;
         width: 472.76px;
-        height: fit-content;
+        height: 480px;
         top: 122px;
         left: 35%;
-        background: #E0E0E0;
+        background: #F2FCF0;
         border-radius: 27px;
         transform: rotate(-0.05deg);
         display: flex;
@@ -89,87 +84,75 @@
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
-        font-size:18px;
     }
 
     dt {
         font-weight: bold;
         margin-bottom: 5px;
-        float:left;
+        float: left;
     }
 
     dd {
         margin: 0;
-    }
-    .alert-hidden{
-        display:none;
     }
 </style>
 
 <body class="deletePage">
     <div class="navbar">
         <p class="conneKtForum">ConneKt Forum</p>
-        <span></span><span>Hi! @Context.HttpContext.Session.GetString("UserName")</span>
-        <a href="@Url.Action("ForumList", "User")">Forums</a>
-        <a class="polls">Polls</a>
+                <a href="@Url.Action("ForumList", "User")">Forums</a>
+        <a class="polls" href="@Url.Action("Polls","User")">Polls</a>
         <a class="contactUs">Contact Us</a>
         <a asp-action="Login" asp-controller="Login" class="LogOut">Log Out</a>
     </div>
-   
     <div class="deleteBox">
         <em style="font-weight:600; text-align:center ; font-family:Garamond; font-size: 23px;">Are you sure you want to delete this profile?</em>
         <br />
-        
-            @if(ViewBag != null)
-            {
-            <p class="alert alert-danger" role="alert">
-                @ViewBag.Message
-            </p>
-            }
-            else{
-                <p class="alert-hidden"></p>
-            }
-        
-        <br />
-        <dl class="details">
-            
-            <dt class="col-sm-10">
-                @Html.DisplayNameFor(model => model.Name)
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.forumId)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Name)
+                @Html.DisplayFor(model => model.forumId)
             </dd>
-            <dt class="col-sm-10">
+            <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.Email)
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.Email)
             </dd>
-            <dt class="col-sm-10">
-                @Html.DisplayNameFor(model => model.Password)
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.category)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Password)
+                @Html.DisplayFor(model => model.category)
             </dd>
-            <dt class="col-sm-10">
-                @Html.DisplayNameFor(model => model.securityQn)
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.title)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.securityQn)
+                @Html.DisplayFor(model => model.title)
             </dd>
-            <dt class="col-sm-10">
-                @Html.DisplayNameFor(model => model.securityAns)
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.content)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.securityAns)
+                @Html.DisplayFor(model => model.content)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.forumCreated)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.forumCreated)
             </dd>
         </dl>
-        <form asp-action="DeleteProfile" asp-controller="Login">
-            <input type="submit" value="Delete" class="btn btn-danger btn-outline-warning" style="margin-left:27%; margin-right:5%;"/>
-            @{
-                int userId = Context.HttpContext.Session.GetInt32("UserId") ?? 0;
-            }
-            <a class="btn  btn-info btn-outline-dark" href="@Url.Action("EditProfile","Login", new {Id = userId})">Edit Profile</a>
+
+        <form asp-action="DeleteForum" asp-controller="User">
+            <input type="submit" value="Delete" class="btn btn-danger" /> |
+            <a class="btn  btn-info btn-outline-dark" href="@Url.Action("EditForum","User", new {Id = Model.forumId})">Edit Profile</a>
+
         </form>
+        
     </div>
 </body>
+

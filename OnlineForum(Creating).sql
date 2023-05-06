@@ -42,15 +42,14 @@ OptionId INT NOT NULL,
 FOREIGN KEY(PollId) REFERENCES UserPoll(PollId),
 FOREIGN KEY(Email) REFERENCES Users(Email)
 )
-
-DROP TABLE UserVoted;
+Drop Table Memory;
  CREATE TABLE Memory(
  Memory_Id INT IDENTITY(1,1) PRIMARY KEY,
- UserId INT NOT NULL,
+ Email VARCHAR(90) NOT NULL,
  Title NVARCHAR(200) NOT NULL,
  Description NVARCHAR(MAX) NOT NULL,
  MemoryDate DATETIME DEFAULT SYSDATETIME() NOT NULL,
- CONSTRAINT fk_mem_USERID FOREIGN KEY(UserId) REFERENCES Users(Id));
+ CONSTRAINT fk_mem_Email FOREIGN KEY(Email) REFERENCES Users(Email));
 
  CREATE TABLE UserPoll (
     
@@ -124,26 +123,33 @@ END
 CREATE OR ALTER PROCEDURE EditUser
 @Id int,
 @Name VarcHar(30),
-@Email VARCHAR(90),
 @Password VARCHAR(50),
 @SecurityQn VARCHAR(MAX),
 @SecurityAns VARCHAR(225)
 AS
 BEGIN
-UPDATE Users SET Name= '@Name', Email='@Email', Password= '@Password' , SecurityQn ='@SecurityQn', SecurityAns='@SecurityAns' WHERE Id=@Id;
+    UPDATE Users SET Name= @Name,  Password= @Password , SecurityQn =@SecurityQn, SecurityAns=@SecurityAns WHERE Id=@Id;
 END
+
 
 CREATE OR ALTER PROCEDURE DeleteUser
 @Id int
 AS
 BEGIN
-DELETE FROM Users WHERE Id=@Id;
-Delete FROM Forum WHERE Id= @Id;
-DELETE FROM Replies WHERE Id=@Id;
-DELETE FROM PollResult WHERE UserId=@Id;
-DELETE FROM Polls WHERE Id=@Id;
-DELETE FROM Memory WHERE UserId = @Id;
+    DECLARE @Old_Email VARCHAR(90)
+    DECLARE @PollCreatedByUser INT
+    SELECT @Old_Email=Email FROM Users WHERE Id=@Id;
+    SELECT @PollCreatedByUser= PollId  FROM UserPoll WHERE Email=@Old_Email;
+    
+    DELETE FROM Replies WHERE Email=@Old_Email;
+    DELETE FROM Forum WHERE Email=@Old_Email;
+    DELETE FROM UserVoted WHERE Email=@Old_Email;
+    DELETE FROM PollOption WHERE UserPollId IN (SELECT PollId FROM UserPoll WHERE Email=@Old_Email);
+    DELETE FROM UserPoll WHERE Email=@Old_Email;
+    DELETE FROM Memory WHERE Email=@Old_Email;
+    DELETE FROM Users WHERE Email=@Old_Email;
 END
+
 
 
 CREATE OR ALTER PROCEDURE GetUserById 
@@ -232,3 +238,24 @@ END
 
 
 EXEC FetchPollsAndOptions;
+
+
+
+
+CREATE OR ALTER PROCEDURE DeleteForum
+@ForumId int
+AS
+BEGIN
+DELETE FROM Replies WHERE ForumId = @ForumId;
+DELETE FROM Forum WHere ForumId=@ForumId;
+END
+
+
+CREATE OR ALTER PROCEDURE EditForum
+@Category VARCHAR(255),
+@Title VARCHAR(125),
+@Content VARCHAR(MAX),
+@ForumCreated DATETIME,
+@ForumId INT
+AS
+UPDATE Forum SET Category=@Category,Title=@Title,Content=@Content,CreatedDate=@ForumCreated WHERE ForumId=@ForumId;
