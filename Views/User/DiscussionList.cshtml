@@ -6,7 +6,7 @@
 <style>
     /* Set default font family and size */
     body {
-        font-family: Garamond, sans-serif;
+        font-family: 'Times New Roman', Times, serif;
         font-size: 20px;
     }
 
@@ -23,7 +23,7 @@
         height: 69px;
         top:0px;
         margin: 0 auto; /* Center the navbar horizontally */
-        background-color: #E9b5e7;
+        background-color: #9FA8DA;
         position: absolute;
         left: 216px;
         float:right;
@@ -35,15 +35,15 @@
             margin-right: 10px;
             margin-left: -130px;
             padding: 12px;
-            font-size:22px;
-            color: #000000;
+            font-size:18px;
+            color: #000;
             text-decoration: none;
             border-radius: 5px;
         }
 
             .navbar a:Hover {
-                background-color: #FFFFFF;
-                color: black;
+                background-color: #5C6BC0;
+                color: #fff;
             }
 
         .navbar span{
@@ -79,7 +79,7 @@
     .rectangle3 {
         width: 216px;
         height: 1024px;
-        background-color: #c4adcf;
+        background-color: #9FA8DA;
         position: absolute;
         top: 0px;
         left: 0px;
@@ -91,15 +91,15 @@
             display: block;
             text-align: center;
             padding: 10px;
-            font-size: 20px;
-            color: #000000;
+            font-size: 18px;
+            color: #000;
             text-decoration: none;
         }
 
 
             .rectangle3 a:hover {
-                background: #fff;
-                color: #000;
+                background: #5C6BC0;
+                color: #fff;
             }
 
 
@@ -235,7 +235,7 @@
     }
 
     .card:nth-child(even) {
-        background-color: #EEEFFF;
+        background-color: #E8EAF6;
     }
 
     .card:nth-child(odd) {
@@ -246,8 +246,8 @@
     }
 
     .myForums{
-        background-color: #F3D1DC;
-        color:#fff
+        background-color: #5C6BC0;
+        color:#fff;
     }
 </style>
 <body>
@@ -286,7 +286,7 @@
                 <input type="submit" class="btn btn-outline-success" value="Search" />
             </!--p-->
         }
-        <a asp-action="Create" asp-controller="User" class="createForum btn btn-outline-primary">Create New Forum</a>
+        <a asp-action="Create" asp-controller="User" class="createForum btn btn-primary btn-outline-light">Create New Forum</a>
             <table class="table">
                 <tbody>
                     @if(Model != null){
@@ -306,7 +306,7 @@
                                         </p>
                                         <div class="btn-group">
                                             <a class="btn btn-outline-secondary" href="@Url.ActionLink("AddReply", "User", new {id = item.forumId})">Look Into</a>
-                                            <a class="btn btn-light btn-outline-primary" href="@Url.ActionLink("EditForum", "User", new {id = item.forumId})">Edit</a>
+                                            <a class="btn  btn-outline-primary" href="@Url.ActionLink("EditForum", "User", new {id = item.forumId})">Edit</a>
                                             <a class="btn btn-outline-danger" href="@Url.ActionLink("DeleteForum", "User", new {id = item.forumId})">Delete</a>
                                         </div>
                                     </div>
@@ -319,3 +319,8 @@
             </div>
         </div>    
 </body>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

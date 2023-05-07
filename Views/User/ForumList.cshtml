@@ -24,7 +24,7 @@
         height: 69px;
         top: 0px;
         margin: 0 auto; /* Center the navbar horizontally */
-        background-color: #78BABE;
+        background-color: #81D4FA;
         position: absolute;
         left: 216px;
         float: right;
@@ -44,8 +44,8 @@
         }
 
         .navbar a:Hover{
-                background-color: #558386;
-                color: #ffffff;
+            background-color: #F8BBD0;
+            color: #000;
         }
 
     /* Style the logo image */
@@ -72,7 +72,7 @@
     .rectangle3 {
         width: 216px;
         height: 1024px;
-        background-color: #78BABE;
+        background-color: #81D4FA;
         position: absolute;
         top: 0px;
         left: 0px;
@@ -90,7 +90,7 @@
         }
 
         .rectangle3 a:hover{
-            background:#fff;
+            background: #F8BBD0;
             color:#000;
         }
     /* Style the table */
@@ -102,6 +102,13 @@
         left: 216px;
     }
 
+        .card:nth-child(even) {
+            background-color: #FCE4EC;
+        }
+
+        .card:nth-child(odd) {
+            background-color: #ffffff;
+        }
         .table th,
         .table td
         .table tr {
@@ -186,7 +193,7 @@
 
     
         .forumList{
-            background-color: #ffffff;
+        background-color: #F8BBD0;
             color:#000000;
         }
         .forumList:Hover{
@@ -198,7 +205,7 @@
         display: inline-flex;
         width: 300px;
         margin-top: 7.5%;
-        margin-left: 25%;
+        margin-left: 20%;
         border-radius: 27px;
         height: 40px;
     }
@@ -226,7 +233,7 @@
 
     .createForum {
         margin-top: 10px;
-        margin-left: 25%;
+        margin-left: 20%;
         left: 216px;
         width: fit-content;
     }
@@ -247,19 +254,17 @@
             <div class="rectangle3">
                 <img src="~/css/logo.png" class="logo" />
                 <p class="ConneKt">ConneKt</p>
-            @{
-                string Email = Context.HttpContext.Session.GetString("UserEmail");
-                int userId = Context.HttpContext.Session.GetInt32("UserId") ?? 0;
-
-            }
-            <a href="@Url.Action("DiscussionList", "User", new { Id = Context.HttpContext.Session.GetString("UserEmail")})" class="myForums">
-                My Forums
-            </a>
-
+                @{
+                    string Email = Context.HttpContext.Session.GetString("UserEmail");
+                    int userId = Context.HttpContext.Session.GetInt32("UserId") ?? 0;
+                }
+                <a href="@Url.Action("DiscussionList", "User", new { Id = Context.HttpContext.Session.GetString("UserEmail")})" class="myForums">
+                    My Forums
+                </a>
                 <a class="myPolls">My Polls</a>
                 <a class="myMemory">My Memories</a>
-            <a href="@Url.Action("EditProfile","Login", new {Id = userId} )" class="editProfile">Edit Profile</a>
-            <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="editProfile">Delete Profile</a>
+                <a href="@Url.Action("EditProfile","Login", new {Id = userId} )" class="editProfile">Edit Profile</a>
+                <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="editProfile">Delete Profile</a>
                 <a class="newAccount" asp-action="SignUp" asp-controller="Login"> New Account</a>
             </div>
 
@@ -267,7 +272,6 @@
             {
                 <p class="searchBox">
                     @Html.TextBox("searchString")<br />
-                    <br>
                     <input type="submit" class="btn btn-outline-success"  value="Search" />
                 </p>
             }
@@ -293,7 +297,7 @@
                                             <small class="text-muted">@Html.DisplayFor(modelItem => item.category)</small>
                                         </p>
                                         <div class="btn-group">
-                                            <a class="btn btn-outline-secondary" href="@Url.ActionLink("AddReply", "User", new {id = item.forumId})">Look Into</a>
+                                            <a class="btn btn-secondary btn-outline-dark" href="@Url.ActionLink("AddReply", "User", new {id = item.forumId})">Look Into</a>
                                         </div>
                                     </div>
                                 </div>
@@ -305,3 +309,8 @@
         </table>
     </div>
 </body>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

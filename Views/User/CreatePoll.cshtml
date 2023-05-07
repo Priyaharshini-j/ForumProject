@@ -1,55 +1,395 @@
 ﻿@model UserPoll
+@inject IHttpContextAccessor Context
+<style>
+    body {
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 20px;
+    }
 
-<h2>Create New Poll</h2>
+    /* Set background color and size for the main container */
+    .discussionList {
+        width: 1440px;
+        height: 1024px;
+        background-color: #FFFFFF;
+    }
 
-<form method="post" action="CreatePoll">
-    <div>
+    /* Style the navigation bar */
+    .navbar {
+        width: calc(100% - 216px);
+        height: 69px;
+        top: 0px;
+        margin: 0 auto; /* Center the navbar horizontally */
+        background-color: #9FA8DA;
+        position: absolute;
+        left: 216px;
+        float: right;
+    }
+        /* Align links to the right corner of navbar */
+        .navbar a {
+            margin-top: -8px;
+            float: right;
+            margin-right: 10px;
+            margin-left: -130px;
+            padding: 12px;
+            font-size: 18px;
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+        }
 
-        <label for="email">Email:</label>
-        <input type="text" id="Email" name="Email" required />
-    </div>
-    <div>
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="Title" required />
-    </div>
-    <div>
-        <label for="category">Category:</label>
-        <input type="text" id="category" name="Category" required />
-    </div>
-    <div>
-        <label for="question">Question:</label>
-        <textarea id="question" name="Question" required></textarea>
-    </div>
-    <div id="options-container">
-        <label for="options">Options:</label>
-        <ul id="options">
-            <li>
-                <input type="text" name="Options[0].OptionText" required />
-            </li>
-        </ul>
-        <button type="button" id="add-option">Add Option</button>
-    </div>
-    <button type="submit">Create Poll</button>
-</form>
+            .navbar a:Hover {
+                background-color: #5C6BC0;
+                color: #fff;
+            }
 
+        .navbar span {
+            float: right;
+            margin-right: 10px;
+            padding: 20px;
+            font-size: 18px;
+            margin-top: -8px;
+            color: #000;
+            text-decoration: none;
+        }
+    /* Style the logo image */
+    .logo {
+        width: 64px;
+        height: 60px;
+        margin-top: 5px;
+        margin-left: 10px;
+        display: inline-block;
+    }
+
+    /* Style the ConneKt heading */
+    .ConneKt {
+        font-size: 28px;
+        font-weight: bold;
+        color: #000000;
+        text-align: center;
+        margin-top: 20px;
+        display: inline-block;
+        font-family: Garamond;
+    }
+
+    /* Style the rectangle containing links */
+    .rectangle3 {
+        width: 216px;
+        height: 1024px;
+        background-color: #9FA8DA;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+    }
+
+        /* Style the links in the rectangle */
+        .rectangle3 a {
+            margin-top: 15px;
+            display: block;
+            text-align: center;
+            padding: 10px;
+            font-size: 18px;
+            color: #000;
+            text-decoration: none;
+        }
+
+
+            .rectangle3 a:hover {
+                background: #5C6BC0;
+                color: #fff;
+            }
+
+
+    /* Style the table */
+    .table, .card {
+        width: calc(100% - 382px);
+        margin-top: 3%;
+        border-collapse: collapse;
+        margin-left: 5%;
+        left: 216px;
+        border-radius: 7px;
+    }
+
+        .table th,
+        .table td
+        .table tr {
+            padding: 10px;
+            text-align: center;
+            width: calc(100% - 216px);
+            left: 216px;
+            justify-content: center;
+            font-family: Garamond;
+        }
+
+        .table th {
+            background-color: #E7D1E6;
+            color: #000000;
+            justify-content: center;
+            text-align: center;
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        .table td {
+            justify-content: center;
+            text-align: center;
+        }
+
+            .table td.forum-id,
+            .table th.forum-id {
+                width: 0%;
+            }
+
+            .table td.id,
+            .table th.id {
+                width: 10%;
+            }
+
+            .table td.category,
+            .table th.category {
+                width: 30%;
+            }
+
+            .table td.title,
+            .table th.title {
+                width: 35%;
+            }
+
+            .table td.content,
+            .table th.content {
+                width: 0%;
+            }
+
+            .table td.forum-created,
+            .table th.forum-created {
+                width: 15%;
+            }
+
+            .table td.actions,
+            .table th.actions {
+                width: 10%;
+                text-align: center;
+            }
+
+    .btn {
+        display: inline-block;
+        padding: 8px 16px;
+        font-size: 16px;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: #fff;
+        border: none;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+        border: none;
+    }
+
+    .container {
+        width: calc(100%-216px);
+        display: flex;
+        justify-content: center;
+    }
+
+    .searchBox {
+        width: 180px;
+        margin-top: 7.5%;
+        margin-left: 25%;
+        left: 216px;
+        border-radius: 27px;
+        display: inline-block;
+    }
+
+        .searchBox input[type="text"] {
+            background: #f1f1f1;
+            border: 1px solid #ccc;
+            padding: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            width: 300px;
+            display: inline-block;
+        }
+
+    .createForum {
+        left: 216px;
+        margin-left: 289px;
+        margin-top: 108px;
+    }
+
+    .card:nth-child(even) {
+        background-color: #E8EAF6;
+    }
+
+    .card:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    .text-muted {
+        color: blue;
+    }
+
+    .myForums {
+        background-color: #5C6BC0;
+        color: #fff;
+    }
+
+    .option-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+        .option-container li {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+            .option-container li input {
+                margin-right: 10px;
+            }
+    .editBox {
+        position: absolute;
+        width: 500px;
+        height: fit-content;
+        top: 122px;
+        margin-left: 40%;
+        background: #EDE7F6;
+        border-radius: 27px;
+        transform: rotate(-0.05deg);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 30px;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .option-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+        .option-item input {
+            flex: 1;
+        }
+        .label{
+        font-family: 'Garamond';
+        font-weight: 500;
+        font-size: 22px;
+        line-height: 26px;
+        color: #2D0F6A;
+        margin-top: 15px;
+        }
+
+    .form-control{
+        text-align: center;
+        width: 100%;
+        margin-top: 15px;
+        height: 43px;
+        background: #EEEEEE;
+        border-radius: 13px;
+        margin-bottom: 20px;
+    }
+</style>
+<body>
+    <div class="discussionList">
+        <div class="navbar">
+            <span></span><span>Hi! @Context.HttpContext.Session.GetString("UserName")</span>
+            <a href="@Url.Action("ForumList", "User")">Forums</a>
+            <a class="polls" href="@Url.Action("Polls","User")">Polls</a>
+            <a class="contactUs">Contact Us</a>
+            <a asp-action="Login" asp-controller="Login" class="LogOut">Log Out</a>
+        </div>
+
+        <div class="rectangle3">
+            <img src="~/css/logo.png" class="logo" />
+            <p class="ConneKt">ConneKt</p>
+            @{
+                string userEmail = Context.HttpContext.Session.GetString("UserEmail");
+                int userId = Context.HttpContext.Session.GetInt32("UserId") ?? 0;
+            }
+            <a href="@Url.Action("DiscussionList", "User", new { Id = userEmail})" class="btn-outline-primary">
+                My Forums
+            </a>
+
+            <a class="myPolls">My Polls</a>
+            <a class="myMemory">My Memories</a>
+            <a href="@Url.Action("EditProfile","Login", new {Id = userId} )" class="editProfile">Edit Profile</a>
+            <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="deleteProfile">Delete Profile</a>
+            <a class="newAccount" asp-action="SignUp" asp-controller="Login"> New Account</a>
+        </div>
+        <div class="editBox">
+            <h4>Create New Poll</h4>
+            <form method="post" action="CreatePoll">
+                <div>
+
+                    <label for="email" class="control-label">Email:</label>
+                    <input type="text" id="Email" class="form-control" name="Email" required />
+                </div>
+                <div>
+                    <label for="title" class="control-label">Title:</label>
+                    <input type="text" class="form-control" id="title" name="Title" required />
+                </div>
+                <div>
+                    <label for="category" class="control-label">Category:</label>
+                    <input type="text" class="form-control" id="category" name="Category" required />
+                </div>
+                <div>
+                    <label for="question" class="control-label">Question:</label>
+                    <textarea id="question" class="form-control" name="Question" required></textarea>
+                </div>
+                <div id="options-container">
+                    <label for="options" class="control-label">Options:</label>
+                    <ul id="options">
+                        <li class="option-item">
+                            <input type="text" class="form-control"  name="Options[0].OptionText" placeholder="Enter an option" required />
+                            <!--button type="button" class="remove-option btn btn-danger">X</!--button-->
+                        </li>
+                    </ul>
+                    <button type="button" id="add-option">Add Option</button>
+                    <span class="validation-message">Please enter at least two options for your poll.</span>
+                </div>
+                <button type="submit">Create Poll</button>
+            </form>
+        </div>
+     </div>
+</body>
 <script>
     var optionIndex = 1;
     var addButton = document.getElementById("add-option");
     var optionsList = document.getElementById("options");
-    var container = document.getElementById("options-container");
 
-    addButton.addEventListener("click", function() {
-        var newOption = document.createElement("li");
-        newOption.innerHTML = '<input type="text" name="Options[' + optionIndex + '].OptionText" required />';
+    addButton.addEventListener("click", function () {
+        var newOption = document.createElement("div");
+        newOption.classList.add("option-container");
+        newOption.innerHTML = '<li><input type="text" class="form-control" name="Options[' + optionIndex + '].OptionText" placeholder="Enter an option" required /><button type="button" class="remove-option btn btn-danger">X</button></li>';
         optionsList.appendChild(newOption);
         optionIndex++;
 
-        var removeButton = document.createElement("button");
-        removeButton.innerText = "Remove Option";
-        removeButton.addEventListener("click", function() {
+        var removeButton = newOption.querySelector(".remove-option");
+        removeButton.addEventListener("click", function () {
             optionsList.removeChild(newOption);
             optionIndex--;
         });
-        container.appendChild(removeButton);
     });
 </script>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

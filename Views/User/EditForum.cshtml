@@ -20,7 +20,7 @@
         height: 69px;
         top: 0px;
         margin: 0 auto; /* Center the navbar horizontally */
-        background-color: #B2EBF2;
+        background-color: #9FA8DA;
         position: absolute;
         left: 0px;
         float: right;
@@ -103,7 +103,7 @@
         width: 100%;
         margin-top: 15px;
         height: 43px;
-        background: #EFEDED;
+        background: #EEEEEE;
         border-radius: 13px;
         margin-bottom: 20px;
     }
@@ -141,10 +141,10 @@
     .editBox{
         position: absolute;
         width: 700px;
-        height: 100%;
+        height: fit-content;
         top: 122px;
-        left: 1;
-        background: #F2FCF0;
+       margin-left:28%;
+        background: #EDE7F6;
         border-radius: 27px;
         transform: rotate(-0.05deg);
         display: flex;
@@ -154,6 +154,31 @@
         display: flex;
         justify-content: flex-start;
     }
+    .rectangle3 {
+        width: 216px;
+        height: 1024px;
+        background-color: #9FA8DA;
+        position: absolute;
+        top: 69px;
+        left: 0px;
+    }
+
+        /* Style the links in the rectangle */
+        .rectangle3 a {
+            margin-top:15px;
+            display: block;
+            text-align: center;
+            padding: 10px;
+            font-size: 18px;
+            color: #000;
+            text-decoration: none;
+        }
+
+
+            .rectangle3 a:hover {
+                background: #5C6BC0;
+                color: #fff;
+            }
 </style>
 
 <body class="AddReplyPage">
@@ -214,8 +239,8 @@
                     <input asp-for="forumCreated" class="form-control" />
                     <span asp-validation-for="forumCreated" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
+                <div class="form-group" style="text-align:center;">
+                    <input type="submit" style="justify-content:center" value="Save" class="btn btn-info btn-outline-secondary" />
                 </div>
             </form>
         </div>

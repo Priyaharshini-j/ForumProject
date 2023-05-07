@@ -58,7 +58,7 @@
         font-weight: bold;
         color: #000000;
         text-align: center;
-        margin-top: 20px;
+        margin-top: 14px;
         display: inline-block;
         font-family: Garamond;
     }
@@ -74,7 +74,7 @@
         width: calc(100% - 216px);
         margin-top: 3%;
         border-collapse: collapse;
-        margin-left: 5%;
+        margin-left: 3%;
         left: 155px;
     }
     .table tr{
@@ -170,19 +170,21 @@
                         <br />
                         <p style="border: solid 1 medium">@ViewBag.Discussion.content</p>
                         <br />
-                        </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
+                    </div>
+                </div>
+                <div class="card" style="margin-left:100px;">
+                    <div class="card-body">
                         @if (ViewBag.Replies.Count > 0)
                         {
                             foreach (var reply in ViewBag.Replies)
                             {
+                                <div class="card-body">
                                 <div class="reply border-1">
-                                    <p>@reply.replyContent</p>
+                                    <p style="font-size: 18px">@reply.replyContent</p>
                                     <p class="text-muted small">Replied by: @reply.Email on @reply.replyCreated.ToString("dd/MM/yyyy")</p>
                                 </div>
                                 <hr />
+                                </div>
                             }
                         }
                         else
@@ -196,7 +198,7 @@
             <br />
             <tr>
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body" style="background-color:#EEEEEE ">
                         <div class="NewReply">
                             <h3>Reply to this discussion</h3>
                             @using (Html.BeginForm("AddReply", "User"))
@@ -216,3 +218,8 @@
         </table>
     </div>
 </body>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

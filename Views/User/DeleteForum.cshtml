@@ -8,6 +8,7 @@
         box-sizing: border-box;
         position: relative;
         margin: auto;
+        font-family: 'Times New Roman', Times, serif
     }
 
     .navbar {
@@ -18,11 +19,10 @@
         position: absolute;
         left: 216px;
         float: right;
-        border: solid 0.25mm;
     }
 
         .navbar a {
-            margin-top: -13px;
+            margin-top: -9px;
             float: right;
             margin-right: 4px;
             margin-left: 164px;
@@ -65,8 +65,8 @@
 
     .deleteBox {
         position: absolute;
-        width: 472.76px;
-        height: 480px;
+        width: 600px;
+        height: fit-content;
         top: 122px;
         left: 35%;
         background: #F2FCF0;
@@ -94,6 +94,7 @@
 
     dd {
         margin: 0;
+        line-height:26px;
     }
 </style>
 
@@ -109,37 +110,37 @@
         <em style="font-weight:600; text-align:center ; font-family:Garamond; font-size: 23px;">Are you sure you want to delete this profile?</em>
         <br />
         <dl class="row">
-            <dt class="col-sm-2">
+            <dt class="col-sm-4">
                 @Html.DisplayNameFor(model => model.forumId)
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.forumId)
             </dd>
-            <dt class="col-sm-2">
+            <dt class="col-sm-4">
                 @Html.DisplayNameFor(model => model.Email)
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.Email)
             </dd>
-            <dt class="col-sm-2">
+            <dt class="col-sm-4">
                 @Html.DisplayNameFor(model => model.category)
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.category)
             </dd>
-            <dt class="col-sm-2">
+            <dt class="col-sm-4">
                 @Html.DisplayNameFor(model => model.title)
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.title)
             </dd>
-            <dt class="col-sm-2">
+            <dt class="col-sm-4">
                 @Html.DisplayNameFor(model => model.content)
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.content)
             </dd>
-            <dt class="col-sm-2">
+            <dt class="col-sm-4">
                 @Html.DisplayNameFor(model => model.forumCreated)
             </dt>
             <dd class="col-sm-10">
@@ -147,7 +148,7 @@
             </dd>
         </dl>
 
-        <form asp-action="DeleteForum" asp-controller="User">
+        <form asp-action="DeleteForum" asp-controller="User" style="text-align:center">
             <input type="submit" value="Delete" class="btn btn-danger" /> |
             <a class="btn  btn-info btn-outline-dark" href="@Url.Action("EditForum","User", new {Id = Model.forumId})">Edit Profile</a>
 
@@ -155,4 +156,8 @@
         
     </div>
 </body>
-
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
