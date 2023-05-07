@@ -263,7 +263,7 @@
             }
     .editBox {
         position: absolute;
-        width: 500px;
+        width: 550px;
         height: fit-content;
         top: 122px;
         margin-left: 40%;
@@ -302,11 +302,12 @@
         margin-top: 15px;
         height: 43px;
         background: #EEEEEE;
-        border-radius: 13px;
+        border-radius: 7px;
         margin-bottom: 20px;
     }
 </style>
-<body>
+
+<div>
     <div class="discussionList">
         <div class="navbar">
             <span></span><span>Hi! @Context.HttpContext.Session.GetString("UserName")</span>
@@ -326,8 +327,7 @@
             <a href="@Url.Action("DiscussionList", "User", new { Id = userEmail})" class="btn-outline-primary">
                 My Forums
             </a>
-
-            <a class="myPolls">My Polls</a>
+            <a class="myPolls" href="" @Url.Action("PollList", "User", new { Email = userEmail})">My Polls</a>
             <a class="myMemory">My Memories</a>
             <a href="@Url.Action("EditProfile","Login", new {Id = userId} )" class="editProfile">Edit Profile</a>
             <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="deleteProfile">Delete Profile</a>
@@ -361,14 +361,20 @@
                             <!--button type="button" class="remove-option btn btn-danger">X</!--button-->
                         </li>
                     </ul>
-                    <button type="button" id="add-option">Add Option</button>
+                    <button type="button" id="add-option" style="text-align:center">Add Option</button><br/>
                     <span class="validation-message">Please enter at least two options for your poll.</span>
-                </div>
-                <button type="submit">Create Poll</button>
+                </div><br>
+                <button type="submit" style="justify-content:center">Create Poll</button>
             </form>
         </div>
      </div>
-</body>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
 <script>
     var optionIndex = 1;
     var addButton = document.getElementById("add-option");
@@ -388,8 +394,3 @@
         });
     });
 </script>
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

@@ -59,6 +59,7 @@
         color: #000000;
         text-align: center;
         margin-top: 14px;
+        margin-left:32px;
         display: inline-block;
         font-family: Garamond;
     }
@@ -135,12 +136,12 @@
                 color: #000;
             }
 </style>
-<body class="AddReplyPage">
+<div class="AddReplyPage">
     <div class="navbar">
         <em class="ConneKt">ConneKt Forum</em>
         <span></span><span>Hi! @Context.HttpContext.Session.GetString("UserName")</span>
         <a href="@Url.Action("ForumList", "User")">Forums</a>
-        <a class="polls"  href="@Url.Action("Polls","User")"   >Polls</a>
+        <a class="polls" href="@Url.Action("Polls","User")">Polls</a>
         <a class="contactUs">Contact Us</a>
         <a asp-action="Login" asp-controller="Login" class="LogOut">Log Out</a>
     </div>
@@ -152,8 +153,7 @@
         <a href="@Url.Action("DiscussionList", "User", new { Id = userEmail})" class="myForums btn-active btn-outline-primary">
             My Forums
         </a>
-
-        <a class="myPolls">My Polls</a>
+        <a class="myPolls" href="@Url.Action("PollList", "User", new { Email = userEmail})">My Polls</a>
         <a class="myMemory">My Memories</a>
         <a href="@Url.Action("EditProfile","Login", new {Id = userId} )" class="editProfile">Edit Profile</a>
         <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="deleteProfile">Delete Profile</a>
@@ -174,52 +174,53 @@
                 </div>
                 <div class="card" style="margin-left:100px;">
                     <div class="card-body">
-                        @if (ViewBag.Replies.Count > 0)
-                        {
-                            foreach (var reply in ViewBag.Replies)
-                            {
+        @if (ViewBag.Replies.Count > 0)
+        {
+            foreach (var reply in ViewBag.Replies)
+            {
                                 <div class="card-body">
-                                <div class="reply border-1">
-                                    <p style="font-size: 18px">@reply.replyContent</p>
-                                    <p class="text-muted small">Replied by: @reply.Email on @reply.replyCreated.ToString("dd/MM/yyyy")</p>
+                                    <div class="reply border-1">
+                                        <p style="font-size: 18px">@reply.replyContent</p>
+                                        <p class="text-muted small">Replied by: @reply.Email on @reply.replyCreated.ToString("dd/MM/yyyy")</p>
+                                    </div>
+                                    <hr />
                                 </div>
-                                <hr />
-                                </div>
-                            }
-                        }
-                        else
-                        {
+            }
+        }
+        else
+        {
                             <p>No replies yet.</p>
-                        }
+        }
                     </div>
                 </div>
             </tr>
-            
+
             <br />
             <tr>
                 <div class="card">
                     <div class="card-body" style="background-color:#EEEEEE ">
                         <div class="NewReply">
                             <h3>Reply to this discussion</h3>
-                            @using (Html.BeginForm("AddReply", "User"))
-                            {
-                                @Html.HiddenFor(model => model.newReply.forumId)
-                                @Html.LabelFor(model => model.newReply.Email)
-                                @Html.TextBoxFor(model => model.newReply.Email, new { @class = "form-control" })
-                                @Html.LabelFor(model => model.newReply.replyContent)
-                                @Html.TextAreaFor(model => model.newReply.replyContent, new { @class = "form-control" })
+        @using (Html.BeginForm("AddReply", "User"))
+        {
+            @Html.HiddenFor(model => model.newReply.forumId)
+            @Html.LabelFor(model => model.newReply.Email)
+            @Html.TextBoxFor(model => model.newReply.Email, new { @class = "form-control" })
+            @Html.LabelFor(model => model.newReply.replyContent)
+            @Html.TextAreaFor(model => model.newReply.replyContent, new { @class = "form-control" })
                                 <br />
                                 <button type="submit" class="btn btn-primary">Submit</button>
-                            }
+        }
                         </div>
                     </div>
                 </div>
             </tr>
         </table>
-    </div>
-</body>
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+        @section Scripts {
+            @{
+                await Html.RenderPartialAsync("_ValidationScriptsPartial");
+            }
+        }
+        </div>
+</div>
+    

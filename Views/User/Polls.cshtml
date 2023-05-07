@@ -1,36 +1,193 @@
 ﻿@model IEnumerable<UserPoll>
-
-<h2>Available Polls</h2>
-<a asp-action="CreatePoll" asp-controller="User" class="createForum btn btn-outline-primary">Create New Forum</a>
-@if(Model!= null)
-{
-    @foreach (var poll in Model)
-    {
-        <div>
-            <h2>@poll.Email</h2>
-            <h3>@poll.Title</h3>
-            <p>@poll.Question</p>
-            <form method="post" action="Polls">
-                <input type="hidden" name="PollId" value="@poll.Id" />
-                <div>
-                    @foreach (var option in poll.Options)
-                    {
-                        <div>
-                            <input type="radio" id="option_@option.Id" name="OptionId" value="@option.Id" required />
-                            <label for="option_@option.Id">@option.OptionText</label>
-                            <div class="progress-bar" style="width: @option.VotePercentage%;"></div>
-                        </div>
-                    }
-                </div>
-                <button type="submit">Vote</button>
-            </form>
-        </div>
+@inject IHttpContextAccessor Context
+<style>
+    body {
+        font-family: Garamond, sans-serif;
+        font-size: 20px;
     }
-}
-else
-{
-    <p> No Polls</p>
-}
+
+    /* Set background color and size for the main container */
+    .discussionList {
+        width: 1440px;
+        height: 1024px;
+        background-color: #FFFFFF;
+    }
+
+    /* Style the navigation bar */
+    .navbar {
+        width: calc(100% - 216px);
+        height: 69px;
+        top: 0px;
+        margin: 0 auto; /* Center the navbar horizontally */
+        background-color: #9FA8DA;
+        position: absolute;
+        left: 216px;
+        float: right;
+    }
+        /* Align links to the right corner of navbar */
+        .navbar a {
+            margin-top: -2px;
+            float: right;
+            margin-right: 10px;
+            margin-left: -130px;
+            padding: 12px;
+            font-size: 18px;
+            color: #000000;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 22px;
+        }
+
+            .navbar a:Hover {
+                background-color: #fff;
+                color: #000;
+            }
+
+    .ConneKt {
+        font-size: 28px;
+        font-weight: bold;
+        color: #000000;
+        text-align: center;
+        margin-top: 20px;
+        display: inline-block;
+        font-family: Garamond;
+        left: 42px;
+    }
+
+    /* Style the rectangle containing links */
+    .rectangle3 {
+        width: 216px;
+        height: 1024px;
+        background-color: #9FA8DA;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+    }
+
+        /* Style the links in the rectangle */
+        .rectangle3 a {
+            margin-top: 10px;
+            display: block;
+            text-align: center;
+            padding: 10px;
+            font-size: 20px;
+            color: #000000;
+            text-decoration: none;
+        }
+
+            .rectangle3 a:hover {
+                background: #fff;
+                color: #000;
+            }
+            
+            .VoteContainer{
+
+            }
+
+            .card{
+                width: calc(100% - 382px);
+                margin-top: 7%;
+                border-collapse: collapse;
+                margin-left: 2%;
+                left: 216px;
+                border-radius: 7px;
+            }
+
+    .progress-bar-container {
+        width: 500px;
+        height: 20px;
+        background-color: #DDDDDD;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background-color: #4CAF50;
+        border-radius: 10px;
+        transition: width 0.5s ease-in-out;
+    }
+
+    .polls{
+        background-color: #F8BBD0;
+    }
+
+</style>
+<body>
+    <div class="discussionList">
+        <div class="navbar">
+            <span></span><span>Hi! @Context.HttpContext.Session.GetString("UserName")</span>
+            <a href="@Url.Action("ForumList", "User")">Forums</a>
+            <a class="polls" href="@Url.Action("Polls","User")">Polls</a>
+            <a class="contactUs">Contact Us</a>
+            <a asp-action="Login" asp-controller="Login" class="LogOut">Log Out</a>
+        </div>
+
+        <div class="rectangle3">
+            <p class="ConneKt">ConneKt</p>
+            @{
+                string userEmail = Context.HttpContext.Session.GetString("UserEmail");
+                int userId = Context.HttpContext.Session.GetInt32("UserId") ?? 0;
+            }
+            <a href="@Url.Action("DiscussionList", "User", new { Id = userEmail})" class="">
+                My Forums
+            </a>
+
+            <a class="myPolls" class="votePoll btn-active btn-outline-primary" href="@Url.Action("PollList","User", new{Email = Context.HttpContext.Session.GetString("UserEmail")})">My Polls</a>
+            <a class="myMemory">My Memories</a>
+            <a href="@Url.Action("EditProfile","Login", new {Id = userId} )">Edit Profile</a>
+            <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="deleteProfile">Delete Profile</a>
+            <a class="newAccount" asp-action="SignUp" asp-controller="Login"> New Account</a>
+        </div>
+
+        <div class="VoteContainer">
+            @if (Model != null)
+            {
+                @foreach (var poll in Model)
+                {
+                   <div class="card">
+                       <div class="card-body">
+                            <h5 class="card-title">@Html.DisplayFor(modelItem => poll.Title)</h5>
+                            <p class="card-text">
+                                <small class="text-muted">@Html.DisplayFor(modelItem => poll.Email) | @Html.DisplayFor(modelItem => poll.Created)</small>
+                            </p>
+                            <p class="card-text">@Html.DisplayFor(modelItem => poll.Question)</p>
+                            <div class="d-flex justify-content-between">
+
+                                <form method="post" action="@Url.Action("Polls")">
+                                    <input type="hidden" name="PollId" value="@poll.Id" />
+                                    @foreach (var option in poll.Options)
+                                    {
+                                        <div>
+                                            <input type="radio" id="option_@option.OptionId" name="OptionId" value="@option.OptionId" required />
+                                            <label for="option_@option.OptionId">@option.OptionText</label>
+                                            <div class="progress-bar-container">
+                                                <div class="progress-bar" style="width: @option.VotePercentage%;"></div>
+                                            </div>
+
+                                        </div>
+                                    }
+                                    <input type="hidden" name="OptionId" id="OptionId" value="" />
+                                    <!-- add this line -->
+                                    <button class="btn btn-info btn-outline-secondary btn-sm" type="submit">Vote</button>
+                                </form>
+
+                                <p class="card-text" style="color: #5084AA">
+                                    <small class="text-muted">@Html.DisplayFor(modelItem => poll.Category)</small>
+                                </p>
+                            </div>
+                        </div>
+                   </div>
+                       
+                }
+            }
+            else
+            {
+                <p> No Polls</p>
+            }
+        </div>
+        </body>
+
 
 <style>
     .progress-bar {
@@ -42,17 +199,12 @@ else
 </style>
 
 <script>
-    var forms = document.getElementsByTagName("form");
-    for (var i = 0; i < forms.length; i++) {
-        forms[i].addEventListener("submit", function () {
-            var options = this.querySelectorAll("input[type='radio']");
-            for (var j = 0; j < options.length; j++) {
-                var progressBar = options[j].nextSibling.nextSibling;
-                if (options[j].checked) {
-                    var votePercentage = parseFloat(progressBar.style.width) + 100.0 / options.length;
-                    progressBar.style.width = votePercentage + "%";
-                }
-            }
+
+    $(document).ready(function () {
+        $("input[name='OptionId']").on("change", function () {
+            var selectedOptionId = $(this).val();
+            $("#OptionId").val(selectedOptionId);
         });
-    }
+    });
+    
 </script>

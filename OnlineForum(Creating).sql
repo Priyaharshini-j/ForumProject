@@ -72,6 +72,8 @@ CREATE TABLE PollOption (
     FOREIGN KEY (UserPollId) REFERENCES UserPoll(PollId)
 );
 
+UPDATE PollOption SET VotePercentage=0, VoteCount=0
+DElete from UserVoted
 
  SELECT * FROM Users;
  SELECT * FROM Forum;
@@ -80,7 +82,7 @@ CREATE TABLE PollOption (
  SELECT * FROM PollOption;
  SELECT * FROM Memory;
  SELECT * FROM UserVoted;
-
+ DELETE FROM UserVoted WHERE voteId=8 OR voteId=9
  --Stored procedure for inserting the user
  CREATE OR ALTER PROCEDURE InsertUser
  @Name VarcHar(30),
@@ -228,7 +230,9 @@ BEGIN
         up.Category,
         up.Question,
         up.Created,
-        po.OptionText
+        po.OptionId,
+        po.OptionText,
+        po.VotePercentage
     FROM 
         UserPoll up 
     LEFT JOIN 
@@ -259,3 +263,67 @@ CREATE OR ALTER PROCEDURE EditForum
 @ForumId INT
 AS
 UPDATE Forum SET Category=@Category,Title=@Title,Content=@Content,CreatedDate=@ForumCreated WHERE ForumId=@ForumId;
+
+
+
+CREATE OR ALTER PROCEDURE FetchPoll
+@Email VARCHAR(90)
+AS
+BEGIN
+    SELECT 
+        up.PollId,
+        up.Email,
+        up.Title,
+        up.Category,
+        up.Question,
+        up.Created,
+        po.OptionText
+    FROM 
+        UserPoll up 
+    LEFT JOIN 
+        PollOption po ON up.PollId = po.UserPollId and up.Email=@Email;
+END
+
+EXEC FetchPoll 'jawahars1966@gmai.com'
+
+
+
+CREATE OR ALTER PROCEDURE UpdateVote
+@PollId INT,
+@OptionId INT
+AS
+BEGIN
+UPDATE PollOption SET VoteCount=VoteCount+1 WHERE OptionId=@OptionId AND UserPollId=@PollId;
+UPDATE PollOption SET VotePercentage=100.0 * VoteCount / (SELECT SUM(VoteCount) FROM PollOption WHERE UserPollId = @PollId ) WHERE UserPollId = @PollId 
+END
+
+
+EXEC UpdateVote 5, 1;
+
+
+CREATE OR ALTER PROCEDURE GetPoll
+@PollId int
+AS
+BEGIN
+    SELECT 
+        up.PollId,
+        up.Email,
+        up.Title,
+        up.Category,
+        up.Question,
+        up.Created,
+        po.OptionText
+    FROM 
+        UserPoll up     
+    LEFT JOIN 
+        PollOption po ON up.PollId = po.UserPollId AND up.PollId=@PollId ;
+END
+
+CREATE OR ALTER PROCEDURE DeletePoll
+@PollId int
+AS
+BEGIN
+DELETE FROM UserVoted WHERE PollId=@PollId;
+DELETE FROM PollOption WHERE UserPollId=@PollId;
+DELETE FROM UserPoll WHERE PollID=@PollId;
+END

@@ -1,7 +1,7 @@
-﻿@model ForumProject.Models.ForumModel
+﻿@model ForumProject.Models.UserPoll
 @inject IHttpContextAccessor Context
 @{
-    ViewData["Title"] = "EditForum";
+    ViewData["Title"] = "Delete Poll";
 }
 <style>
     .body {
@@ -141,10 +141,10 @@
 
     .editBox {
         position: absolute;
-        width: 700px;
+        width: 500px;
         height: fit-content;
         top: 122px;
-        margin-left: 28%;
+        margin-left: 34%;
         background: #EDE7F6;
         border-radius: 27px;
         transform: rotate(-0.05deg);
@@ -208,49 +208,57 @@
         <a class="newAccount" asp-action="SignUp" asp-controller="Login"> New Account</a>
     </div>
     <div class="editBox">
-        <div>
-            <form asp-action="EditForum">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group" hidden>
-                    <label asp-for="forumId" class="control-label"></label>
-                    <input asp-for="forumId" class="form-control" />
-                    <span asp-validation-for="forumId" class="text-danger"></span>
-                </div>
-                <div class="form-group" hidden>
-                    <label asp-for="Email" class="control-label"></label>
-                    <input asp-for="Email" class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="category" class="control-label"></label>
-                    <input asp-for="category" class="form-control" />
-                    <span asp-validation-for="category" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="title" class="control-label"></label>
-                    <input asp-for="title" class="form-control" />
-                    <span asp-validation-for="title" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="content" class="control-label"></label>
-                    <textarea asp-for="content" style="line-height:normal" class="form-control"></textarea>
-                    <span asp-validation-for="content" class="text-danger"></span>
-                </div>
-                <div class="form-group" hidden>
-                    <label asp-for="forumCreated" class="control-label"></label>
-                    <input asp-for="forumCreated" class="form-control" />
-                    <span asp-validation-for="forumCreated" class="text-danger"></span>
-                </div>
-                <div class="form-group" style="text-align:center;">
-                    <input type="submit" style="justify-content:center" value="Save" class="btn btn-info btn-outline-secondary" />
-                </div>
-            </form>
-        </div>
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Id)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Id)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Email)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Email)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Title)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Title)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Category)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Category)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Question)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Question)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Created)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Created)
+            </dd>
+            <dd>
+                @foreach (var option in Model.Options)
+                {
+                    <li style="font-size:14px;"><small class="text-muted" style="font-size:14px; " for="option_@option.Id">@option.OptionText</small></li>
+
+                }
+            </dd>
+        </dl>
+       
+        <form asp-action="DeletePoll">
+            <input type="submit" value="Delete" class="btn btn-danger" /> |
+            <a asp-action="Polls">Back to List</a>
+        </form>
     </div>
+
 </body>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

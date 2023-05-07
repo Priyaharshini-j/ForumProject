@@ -236,6 +236,7 @@ namespace ForumProject.Controllers
             }
             catch (Exception ex)
             {
+                ViewBag.Message = ex.Message;
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View();
             }
@@ -457,13 +458,18 @@ namespace ForumProject.Controllers
                         };
                         pollList.Add(poll);
                     }
+                    int optionId = (int)reader["OptionId"];
                     string optionText = reader["OptionText"] as string;
+                    double optionPrecentage = (double)reader["VotePercentage"];
                     if (!string.IsNullOrEmpty(optionText))
                     {
                         PollOption option = new PollOption()
                         {
                             Id = pollId,
-                            OptionText = optionText
+                            OptionId=optionId,
+                            OptionText = optionText,
+                            VotePercentage = optionPrecentage
+
                         };
                         poll.Options.Add(option);
                     }
@@ -473,19 +479,23 @@ namespace ForumProject.Controllers
             _connection.Close();
             return View(pollList);
         }
-
+        
         [HttpPost]
-        public ActionResult<List<UserPoll>> Polls(int PollId, int OptionId)
+        public IActionResult Polls(UserPoll poll)
         {
             try
             {
+
+                var pollId = int.Parse(Request.Form["PollId"]);
+                var optionId = int.Parse(Request.Form["OptionId"]);
+                Console.WriteLine("OptionId is "+optionId);
                 Console.WriteLine("Try block");
                 _connection.Open();
                 int opt_Id = 0;
                 using (SqlCommand comm = new SqlCommand("SELECT OptionId FROM UserVoted WHERE PollId = @PollId AND Email = @Email", _connection))
                 {
                     Console.WriteLine("inside the select using");
-                    comm.Parameters.AddWithValue("@PollId", PollId);
+                    comm.Parameters.AddWithValue("@PollId", pollId);
                     comm.Parameters.AddWithValue("@Email", Context.HttpContext.Session.GetString("UserEmail"));
 
                     Console.WriteLine("bfr reader");
@@ -503,22 +513,27 @@ namespace ForumProject.Controllers
                 Console.WriteLine(opt_Id);
                 if (opt_Id == 0)
                 {
-                    Console.WriteLine(opt_Id);
                     Console.WriteLine("in if");
-                    using (SqlCommand cmd = new SqlCommand("UPDATE PollOption SET VoteCount= VoteCount + 1 WHERE OptionId = @OptionId AND UserPollId=@PollId", _connection))
+
+                    Console.WriteLine("OptionId is " + optionId);
+                    using (SqlCommand cmd = new SqlCommand("UpdateVote", _connection))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
                         Console.WriteLine("bfr reader");
                         Console.WriteLine("using block");
-                        Console.WriteLine(OptionId);
-                        cmd.Parameters.AddWithValue("@PollId", PollId);
-                        cmd.Parameters.AddWithValue("@OptionId", OptionId);
+                        Console.WriteLine(optionId);
+                        cmd.Parameters.AddWithValue("@PollId", pollId);
+                        cmd.Parameters.AddWithValue("@OptionId", optionId);
                         cmd.ExecuteNonQuery();
                     }
+
                     Console.Write("SqlDataReader dr = cmd.ExecuteReader() executed");
                     using (SqlCommand command = new SqlCommand("INSERT INTO UserVoted VALUES (@email,@PollId, @OptionId) ", _connection))
                     {
-                        command.Parameters.AddWithValue("@PollId", PollId);
-                        command.Parameters.AddWithValue("@OptionId", OptionId);
+
+                        Console.WriteLine("OptionId is " + optionId);
+                        command.Parameters.AddWithValue("@PollId", pollId);
+                        command.Parameters.AddWithValue("@OptionId", optionId);
                         Console.WriteLine(Context.HttpContext.Session.GetString("UserEmail"));
                         command.Parameters.AddWithValue("@email", Context.HttpContext.Session.GetString("UserEmail"));
                         command.ExecuteNonQuery();
@@ -540,7 +555,6 @@ namespace ForumProject.Controllers
                 return View(new List<UserPoll>());
             }
         }
-
         [HttpGet]
         public IActionResult DeleteForum(int id)
         {
@@ -624,6 +638,117 @@ namespace ForumProject.Controllers
                 return RedirectToAction(nameof(ForumList));
             }
         }
-
+        [HttpGet]
+        public ActionResult<List<UserPoll>> PollList(string Email)
+        {
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand("FetchPoll", _connection);
+                cmd.Parameters.AddWithValue("@Email", Email);
+                cmd.CommandType = CommandType.StoredProcedure;
+                List<UserPoll> pollList = new List<UserPoll>();
+                SqlDataReader reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    int pollId = (int)reader["PollId"];
+                    UserPoll poll = pollList.FirstOrDefault(p => p.Id == pollId);
+                    if (poll == null)
+                    {
+                        poll = new UserPoll()
+                        {
+                            Id = pollId,
+                            Email = (string)reader["Email"],
+                            Title = (string)reader["Title"],
+                            Category = (string)reader["Category"],
+                            Question = (string)reader["Question"],
+                            Created = (DateTime)reader["Created"],
+                            Options = new List<PollOption>()
+                        };
+                        pollList.Add(poll);
+                    }
+                    string optionText = reader["OptionText"] as string;
+                    if (!string.IsNullOrEmpty(optionText))
+                    {
+                        PollOption option = new PollOption()
+                        {
+                            Id = pollId,
+                            OptionText = optionText
+                        };
+                        poll.Options.Add(option);
+                    }
+                }
+                return View(pollList);
+            }
+            catch(Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                Console.WriteLine(ex.Message);
+                return View(new List<UserPoll>());
+            }
+        }
+        [HttpGet]
+        public ActionResult<UserPoll> DeletePoll(int id)
+        {
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand("GetPoll", _connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@PollId", id);
+                SqlDataReader reader =cmd.ExecuteReader();
+                UserPoll poll = null;
+                while(reader.Read())
+                {
+                    poll = new UserPoll()
+                    {
+                        Id = (int)reader[0],
+                        Email = (string)reader["Email"],
+                        Title = (string)reader["Title"],
+                        Category = (string)reader["Category"],
+                        Question = (string)reader["Question"],
+                        Created = (DateTime)reader["Created"],
+                        Options = new List<PollOption>()
+                    };
+                    int pollId = poll.Id;   
+                    string optionText = reader["OptionText"] as string;
+                    if (!string.IsNullOrEmpty(optionText))
+                    {
+                        PollOption option = new PollOption()
+                        {
+                            Id = pollId,
+                            OptionText = optionText
+                        };
+                        poll.Options.Add(option);
+                    }
+                }
+                _connection.Close();
+                return View(poll);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View();
+            }
+        }
+        [HttpPost]
+        public ActionResult DeletePoll(UserPoll poll)
+        {
+            try
+            {
+                _connection.Open();
+                SqlCommand cmd = new SqlCommand("DeletePoll", _connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@PollId", poll.Id);
+                cmd.ExecuteNonQuery();
+                return RedirectToAction("Polls", User);
+             }
+            catch(Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                Console.WriteLine(ex.Message);
+                return View();
+            }
+        }
     }
 }
