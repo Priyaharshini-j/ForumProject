@@ -1,0 +1,28 @@
+﻿@model ForumProject.Models.Invite
+@{
+    ViewData["Title"] = "Invite";
+}
+<center>
+    @using(Html.BeginForm("Invite","SendMail",FormMethod.Post, new {enctype = "multipart/form-data"})){
+    <table border="1">
+        <tr>
+            <td>To</td>
+            <td>@Html.TextBoxFor(model=>model.To)</td>
+        </tr>
+        <tr>
+            <td>Subject</td>
+            <td>@Html.TextBoxFor(model=>model.Subject)</td>
+        </tr>
+        <tr>
+            <td>Body</td>
+            <td>@Html.TextAreaFor(model=>model.Body)</td>
+        </tr>
+        <tr>
+            <td><input tpe="submit" value="Send Mail" /></td>
+        </tr>
+    </table>
+    }
+    
+</center>
+<h1>Invite</h1>
+

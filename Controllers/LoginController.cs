@@ -99,15 +99,8 @@ namespace ForumProject.Controllers
         {
             try
             {
-                connection.Open();
-                Console.WriteLine(user.Name);
-                Console.WriteLine(user.Email);
-                Console.WriteLine(user.Password);
-                Console.WriteLine(user.securityQn);
-                Console.WriteLine(user.securityQn);
-                Console.WriteLine(user.securityAns);
-                
-                if(connection.State == System.Data.ConnectionState.Open)
+                connection.Open();                
+                if(connection.State == ConnectionState.Open)
                 {
                     SqlCommand command = new SqlCommand("InsertUser", connection);
                     command.CommandType = System.Data.CommandType.StoredProcedure;
@@ -128,16 +121,13 @@ namespace ForumProject.Controllers
                 connection.Close();
                 return View();
             }
-            catch(Exception exception)
+            catch(SqlException exception)
             {
-                ModelState.AddModelError(string.Empty, exception.Message);
+                ModelState.AddModelError(string.Empty, "Already existing Email "+user.Email);
+                Console.WriteLine(exception.Message);
                 return View();
             }
         }
-
-
-
-
         //GET: LoginController/ForgotPassword
         public ActionResult ChangePassword()
         {
@@ -218,7 +208,7 @@ namespace ForumProject.Controllers
                     cmd.ExecuteNonQuery();
                     connection.Close();
                 }
-                return RedirectToAction("DiscussionList", "User", new { Id = id });
+                return RedirectToAction("DiscussionList", "User", new { Email = Context.HttpContext.Session.GetString("UserEmail") });
             }
             catch (Exception ex)
             {
@@ -269,15 +259,17 @@ namespace ForumProject.Controllers
         // POST: LoginController1/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteProfile(int id, IFormCollection collection)
+        public ActionResult DeleteProfile()
         {
             try
             {
+                string email = Context.HttpContext.Session.GetString("UserEmail");
+                Console.WriteLine(email+" this is in del");
                 connection.Open();
                 using (SqlCommand cmd = new SqlCommand("DeleteUser", connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Id", id);
+                    cmd.Parameters.AddWithValue("@Email",email);
                     cmd.ExecuteNonQuery();
                     connection.Close();
 

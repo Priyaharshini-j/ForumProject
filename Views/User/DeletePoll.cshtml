@@ -189,7 +189,7 @@
         <span></span><span>Hi! @Context.HttpContext.Session.GetString("UserName")</span>
         <a href="@Url.Action("ForumList", "User")">Forums</a>
         <a class="polls" href="@Url.Action("Polls","User")">Polls</a>
-        <a class="contactUs">Contact Us</a>
+        <!--a class="contactUs">Contact Us</!--a-->
         <a asp-action="Login" asp-controller="Login" class="LogOut">Log Out</a>
     </div>
     <div class="rectangle3">
@@ -200,9 +200,9 @@
         <a href="@Url.Action("DiscussionList", "User", new { Id = userEmail})" class="myForums btn-active btn-outline-primary">
             My Forums
         </a>
+        <a class="myPolls" class="votePoll btn-active btn-outline-primary" href="@Url.Action("PollList","User", new{Email = Context.HttpContext.Session.GetString("UserEmail")})">My Polls</a>
 
-        <a class="myPolls">My Polls</a>
-        <a class="myMemory">My Memories</a>
+        <!--a class="myMemory">My Memories</!--a-->
         <a href="@Url.Action("EditProfile","Login", new {Id = userId} )" class="editProfile">Edit Profile</a>
         <a href="@Url.Action("DeleteProfile","Login", new {Id = userId} )" class="deleteProfile">Delete Profile</a>
         <a class="newAccount" asp-action="SignUp" asp-controller="Login"> New Account</a>

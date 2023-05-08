@@ -135,12 +135,12 @@ END
 
 
 CREATE OR ALTER PROCEDURE DeleteUser
-@Id int
+@Email VARCHAR(90)
 AS
 BEGIN
     DECLARE @Old_Email VARCHAR(90)
     DECLARE @PollCreatedByUser INT
-    SELECT @Old_Email=Email FROM Users WHERE Id=@Id;
+    SET @Old_Email=@Email
     SELECT @PollCreatedByUser= PollId  FROM UserPoll WHERE Email=@Old_Email;
     
     DELETE FROM Replies WHERE Email=@Old_Email;
@@ -281,7 +281,9 @@ BEGIN
     FROM 
         UserPoll up 
     LEFT JOIN 
-        PollOption po ON up.PollId = po.UserPollId and up.Email=@Email;
+        PollOption po ON up.PollId = po.UserPollId 
+        WHERE
+        up.Email=@Email;
 END
 
 EXEC FetchPoll 'jawahars1966@gmai.com'
@@ -327,3 +329,10 @@ DELETE FROM UserVoted WHERE PollId=@PollId;
 DELETE FROM PollOption WHERE UserPollId=@PollId;
 DELETE FROM UserPoll WHERE PollID=@PollId;
 END
+
+
+DELETE UserVoted WHERE PollId=7
+DELETE PollOption WHERE UserPollId=7
+DELETE UserPoll WHERE PollId=7
+
+DELETE UserVoted WHERE PollId=9

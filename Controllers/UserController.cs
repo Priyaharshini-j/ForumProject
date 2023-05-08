@@ -93,7 +93,7 @@ namespace ForumProject.Controllers
                     ForumModel model = new ForumModel();
                     model.forumId = (int)reader[0];
                     model.Email = (string)reader[1];
-                    model.content = (string)reader[2];
+                    model.category = (string)reader[2];
                     model.title = (string)reader[3];
                     model.content = (string)reader[4];
                     model.forumCreated = (DateTime)reader[5];
@@ -246,26 +246,35 @@ namespace ForumProject.Controllers
         // GET: DiscussionController/Details/5
         public IActionResult AddReply(int id)
         {
-
-            var discussion = GetDiscussionById(id);
-            var replyList = GetRepliesByDiscussionId(id);
-
-            if (discussion == null)
+            try
             {
-                return NotFound();
+                var discussion = GetDiscussionById(id);
+                var replyList = GetRepliesByDiscussionId(id);
+
+                if (discussion == null)
+                {
+                    return NotFound();
+                }
+
+                ViewBag.Discussion = discussion;
+                ViewBag.Replies = replyList;
+
+                var model = new DiscussionViewModel
+                {
+                    forum = discussion,
+                    replies = replyList,
+                    newReply = new RepliesModel { forumId = id }
+                };
+
+                return View(model);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            ViewBag.Discussion = discussion;
-            ViewBag.Replies = replyList;
-
-            var model = new DiscussionViewModel
-            {
-                forum = discussion,
-                replies = replyList,
-                newReply = new RepliesModel { forumId = id }
-            };
-
-            return View(model);
+            return View();
         }
 
         // POST: DiscussionController/Details/5
@@ -432,6 +441,7 @@ namespace ForumProject.Controllers
             }
             return View();
         }
+        [HttpGet]
         public ActionResult<List<UserPoll>> Polls()
         {
             List<UserPoll> pollList = new List<UserPoll>();
@@ -594,8 +604,6 @@ namespace ForumProject.Controllers
             try
             {
                 _connection.Open();
-                Console.WriteLine("opened");
-                Console.Write(Id);
                 SqlCommand cmd2 = new SqlCommand("DELETE FROM Replies WHERE ForumId = @ForumId", _connection);
                 cmd2.Parameters.AddWithValue("@ForumId", Id);
                 cmd2.ExecuteNonQuery();
@@ -629,7 +637,6 @@ namespace ForumProject.Controllers
                 cmd.Parameters.AddWithValue("@ForumId", model.forumId);
                 cmd.Parameters.AddWithValue("@ForumCreated", model.forumCreated);
                 cmd.ExecuteNonQuery();
-                Console.WriteLine("Executed");
                 return RedirectToAction(nameof(ForumList));
             }
             catch
@@ -736,6 +743,7 @@ namespace ForumProject.Controllers
         {
             try
             {
+                Console.WriteLine(poll.Id);
                 _connection.Open();
                 SqlCommand cmd = new SqlCommand("DeletePoll", _connection);
                 cmd.CommandType = CommandType.StoredProcedure;

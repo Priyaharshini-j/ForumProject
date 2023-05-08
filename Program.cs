@@ -1,3 +1,6 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace ForumProject
 {
     public class Program
@@ -5,7 +8,7 @@ namespace ForumProject
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+           
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 

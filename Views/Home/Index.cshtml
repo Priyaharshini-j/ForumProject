@@ -1,8 +1,132 @@
-﻿@{
+﻿@model IEnumerable<ForumProject.Models.UsersModel>
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome Admin</h1>
+    
 </div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<button onclick="GetUsers()" class="btn btn-primary">Get Users</button>
+<button onclick="GetForums()" class="btn btn-info">Get Forums</button>
+<button onclick="GetPolls()" class="btn btn-dark">Get Polls</button>
+
+<table id="tblUsers" class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th>
+                ID
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Security Question
+            </th>
+            <th>
+                Security Answer
+            </th>
+            
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<table id="tblForums" class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th>
+                ForumId
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                Title
+            </th>
+            <th>
+                Content
+            </th>
+
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<table id="tblPolls" class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                Title
+            </th>
+            <th>
+                Questions
+            </th>
+
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script type="text/javascript">
+    function GetUsers() {
+        $.getJSON("/Home/GetUsers", function (users) {
+            $("#tblUsers tbody").empty();
+            $.each(users, function (i, user) {
+                $("#tblUsers tbody").append("<tr>" +
+                    "<td>" + user.id + "</td>" +
+                    "<td>" + user.name + "</td>" +
+                    "<td>" + user.email + "</td>" +
+                    "<td>" + user.securityQn + "</td>" +
+                    "<td>" + user.securityAns + "</td>" +
+                    "</tr>");
+            });
+        });
+    }
+
+    function GetForums() {
+        $.getJSON("/Home/GetForums", function (users) {
+            $("#tblForums tbody").empty();
+            $.each(users, function (i, user) {
+                $("#tblForums tbody").append("<tr>" +
+                    "<td>" + user.forumId + "</td>" +
+                    "<td>" + user.email + "</td>" +
+                    "<td>" + user.category + "</td>" +
+                    "<td>" + user.title + "</td>" +
+                    "<td>" + user.content + "</td>" +
+                    "</tr>");
+            });
+        });
+    }
+    function GetPolls() {
+        $.getJSON("/Home/GetPolls", function (users) {
+            $("#tblPolls tbody").empty();
+            $.each(users, function (i, user) {
+                $("#tblPolls tbody").append("<tr>" +
+                    "<td>" + user.id + "</td>" +
+                    "<td>" + user.email + "</td>" +
+                    "<td>" + user.category + "</td>" +
+                    "<td>" + user.title + "</td>" +
+                    "<td>" + user.question + "</td>" +
+                    "</tr>");
+            });
+        });
+    }
+</script>
+
+
