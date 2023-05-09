@@ -9,6 +9,7 @@ namespace ForumProject.Models
         public int pollId { get; set; }
         [DisplayName("User Id")]
         public int Id { get; set; }
+        [DisplayName("Category")]
         public string category { get; set; }
         public string pollTitle { get; set; }
         public DateTime pollCreated { get; set; } = System.DateTime.Now;
