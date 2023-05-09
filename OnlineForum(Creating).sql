@@ -82,7 +82,8 @@ DElete from UserVoted
  SELECT * FROM PollOption;
  SELECT * FROM Memory;
  SELECT * FROM UserVoted;
- DELETE FROM UserVoted WHERE voteId=8 OR voteId=9
+
+
  --Stored procedure for inserting the user
  CREATE OR ALTER PROCEDURE InsertUser
  @Name VarcHar(30),
@@ -336,3 +337,6 @@ DELETE PollOption WHERE UserPollId=7
 DELETE UserPoll WHERE PollId=7
 
 DELETE UserVoted WHERE PollId=9
+
+
+DELETE Users WHERE Email = 'john@example.com' OR Email='mary@example.com' OR Email ='bob@example.com'OR Email='jane@example.com';

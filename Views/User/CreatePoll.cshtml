@@ -338,8 +338,8 @@
             <form method="post" action="CreatePoll">
                 <div>
 
-                    <label for="email" class="control-label">Email:</label>
-                    <input type="text" id="Email" class="form-control" name="Email" required />
+                    <label  hidden for="email" class="control-label">Email:</label>
+                    <input   hidden type="text" id="Email" class="form-control" name="Email" value=@Context.HttpContext.Session.GetString("UserEmail") />
                 </div>
                 <div>
                     <label for="title" class="control-label">Title:</label>

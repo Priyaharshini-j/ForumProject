@@ -18,7 +18,7 @@ namespace ForumProject.Controllers
         SqlConnection connection;
         IHttpContextAccessor Context;
 
-        //This part is user  to set the Session
+        //This part is user  to set the Session and also setting the connection string
         public LoginController(IConfiguration _configuration, IHttpContextAccessor context)
         {
             configuration = _configuration;
@@ -45,7 +45,7 @@ namespace ForumProject.Controllers
             try
             {
                 connection.Open();
-                //In here we are selecting the record with the the entered email and password
+                //In here we are selecting the record with the the entered email and password by that we come to know whether the person already registered or not
                 string query = $"SELECT * FROM Users WHERE Email=@Email AND Password=@Password";
                 SqlCommand cmd = new SqlCommand(query,connection);
                 cmd.Parameters.AddWithValue("@Email", user.Email);
@@ -155,7 +155,7 @@ namespace ForumProject.Controllers
                     string ans = (string)reader["SecurityAns"];
                     if (user.securityQn == qn && user.securityAns == ans)
                     {
-
+                        //setting the session to the useremail, userId and Name
                         Context.HttpContext.Session.SetString("UserEmail", user.Email);
                         int userID = (int)reader["Id"];
                         string userName = (string)reader["Name"];
@@ -165,7 +165,7 @@ namespace ForumProject.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, "Wrong Password/Email");
+                        ModelState.AddModelError(string.Empty, "Wrong Email");
                         return View();
                     }
                 }
@@ -252,7 +252,7 @@ namespace ForumProject.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
-                return null;
+                return new UsersModel();
             }
         }
 
@@ -274,7 +274,7 @@ namespace ForumProject.Controllers
                     connection.Close();
 
                 }
-                return RedirectToAction(nameof(Login));
+                return RedirectToAction("Login","Login");
             }
             catch(Exception ex)
             {

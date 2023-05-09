@@ -222,6 +222,7 @@ namespace ForumProject.Controllers
         {
             try
             {
+                Console.WriteLine(discuss.Email);
                 _connection.Open();
                 SqlCommand cmd = new SqlCommand("InsertForum", _connection);
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -283,7 +284,8 @@ namespace ForumProject.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                Console.WriteLine(newReply.Email);
+                if (ModelState.IsValid && newReply.Email != null)
                 {
                     var connection = new SqlConnection(_configuration.GetConnectionString("OnlineForum"));
                     connection.Open();
@@ -291,7 +293,7 @@ namespace ForumProject.Controllers
 
                     SqlCommand cmd = new SqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@DiscussionId", newReply.forumId);
-                    cmd.Parameters.AddWithValue("@Email", newReply.Email);
+                    cmd.Parameters.AddWithValue("@Email", Context.HttpContext.Session.GetString("UserEmail"));
                     cmd.Parameters.AddWithValue("@Content", newReply.replyContent);
                     cmd.Parameters.AddWithValue("@ReplyCreated", DateTime.Now);
 
@@ -300,9 +302,6 @@ namespace ForumProject.Controllers
 
                     return RedirectToAction("AddReply", new { id = newReply.forumId });
                 }
-
-
-
                 // If model state is invalid, return to the same page with the model to show validation errors
                 var discussion = GetDiscussionById(newReply.forumId);
                 var replies_List = GetRepliesByDiscussionId(newReply.forumId);
@@ -393,6 +392,7 @@ namespace ForumProject.Controllers
         {
             try
             {
+                Console.WriteLine(poll.Email);
                 int pollId = 0;
                 using (SqlCommand command = new SqlCommand("CreatePoll", _connection))
                 {
@@ -513,7 +513,7 @@ namespace ForumProject.Controllers
                     while (reader.Read())
                     {
                         Console.WriteLine("insid reader");
-                        opt_Id = (int)reader["OptionId"];
+                        opt_Id++;
                     }
                     reader.Close();
                     Console.WriteLine(opt_Id);

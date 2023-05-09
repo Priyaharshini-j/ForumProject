@@ -204,8 +204,12 @@
         @using (Html.BeginForm("AddReply", "User"))
         {
             @Html.HiddenFor(model => model.newReply.forumId)
-            @Html.LabelFor(model => model.newReply.Email)
-            @Html.TextBoxFor(model => model.newReply.Email, new { @class = "form-control" })
+            <div hidden class="form-group">
+                <label asp-for="newReply.Email" class="control-label"></label>
+                <input asp-for="newReply.Email" class="form-control" value="@Context.HttpContext.Session.GetString("UserEmail")" />
+                <span asp-validation-for="newReply.Email" class="text-danger"></span>
+            </div>
+
             @Html.LabelFor(model => model.newReply.replyContent)
             @Html.TextAreaFor(model => model.newReply.replyContent, new { @class = "form-control" })
                                 <br />

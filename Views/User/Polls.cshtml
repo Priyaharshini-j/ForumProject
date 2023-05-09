@@ -57,7 +57,7 @@
     /* Style the rectangle containing links */
     .rectangle3 {
         width: 216px;
-        height: 1024px;
+        height: 100%;
         background-color: #9FA8DA;
         position: absolute;
         top: 0px;
@@ -147,6 +147,9 @@
                 @foreach (var poll in Model)
                 {
                    <div class="card">
+                        <p class="card-text" style="color: #5084AA">
+                            <small class="text-muted alert-warning">  Make sure you vote for the poll only once... The poll result won't be reflected even if you vote more than once</small>
+                        </p>
                        <div class="card-body">
                             <h5 class="card-title">@Html.DisplayFor(modelItem => poll.Title)</h5>
                             <p class="card-text">
